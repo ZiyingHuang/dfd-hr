@@ -68,6 +68,8 @@ sh install.sh
 - **Preprocessing (optional):** If you only want to use the processed data we provided, you can skip this step. Otherwise, you need to perform **data preprocessing strictly following DeepfakeBench**.
 - **Rearrangement (optional):** *"Rearrangement"* means that we need to **create a JSON file for each dataset that collects all frames within different folders**. Please refer to **DeepfakeBench** and **DF40** for the provided JSON files for each dataset. After running the rearrangement step, you will obtain the JSON files for each dataset in the `./preprocessing/dataset_json` folder. The rearranged structure organizes the data hierarchically, grouping videos based on their labels and data splits (*i.e.,* train / test / validation). Each video is represented as a dictionary entry containing relevant metadata, including file paths, labels, compression levels (if applicable), *etc*.
 
+For the current Linux setup, `training/config/train_config.yaml` and `training/config/test_config.yaml` use `/data/hjr/dfbench/rgb` for RGB frames and `/data/hjr/dfbench/dataset_json` for manifests. Update these two values when running on another machine.
+
 ### 3. Download Checkpoints
 
 The checkpoint of **"CLIP-L14 + our DFD-HR"** *trained on FaceForensics++* is released on [Google Drive](https://drive.google.com/file/d/1E3C9IGBlep4JSd9IPbHTADsIEktlmHQE/view?usp=drive_link).
@@ -79,7 +81,7 @@ You can run the following commands to train the model:
 **For multiple GPUs:**
 
 ```bash
-python3 -m torch.distributed.launch --nproc_per_node=4 training/train.py \
+python3 -m torch.distributed.launch --nproc_per_node=4 scripts/train.py \
     --detector_path ./training/config/detector/dfd_hr.yaml \
     --train_dataset FaceForensics++ \
     --test_dataset Celeb-DF-v2 \
@@ -89,7 +91,7 @@ python3 -m torch.distributed.launch --nproc_per_node=4 training/train.py \
 **For a single GPU:**
 
 ```bash
-python3 training/train.py \
+python3 scripts/train.py \
     --detector_path ./training/config/detector/dfd_hr.yaml \
     --train_dataset FaceForensics++ \
     --test_dataset Celeb-DF-v2
@@ -100,7 +102,7 @@ python3 training/train.py \
 Once you finish training, you can test the model on several deepfake datasets such as DF40:
 
 ```bash
-python3 training/test.py \
+python3 scripts/test.py \
     --detector_path ./training/config/detector/dfd_hr.yaml \
     --test_dataset Celeb-DF-v2 FaceShifter DeepFakeDetection DFDC DFDCP \
                    test_DFR test_WDF test_FFIW \
