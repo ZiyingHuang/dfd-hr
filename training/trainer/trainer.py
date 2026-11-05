@@ -221,7 +221,9 @@ class Trainer(object):
         ):
 
         self.logger.info("===> Epoch[{}] start!".format(epoch))
-        if epoch>=1:
+        if self.config.get('test_times_per_epoch'):
+            times_per_epoch = int(self.config['test_times_per_epoch'])
+        elif epoch>=1:
             times_per_epoch = 2
         else:
             times_per_epoch = 1

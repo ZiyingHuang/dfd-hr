@@ -8,6 +8,8 @@ model_name: dfd_hr_pmil
 log_dir: ./logs/pmil
 
 nEpochs: 3            # epochs 0..3 (4 passes); only ~1M parameters are trained
+test_times_per_epoch: 1   # Celeb-DF-v2 checkpoint selection once per epoch (test costs ~35 min, training ~18 min)
+ddp_timeout_min: 360      # rank 0 tests alone while the other ranks wait in NCCL
 
 part_mil:
   template_path: ./training/config/part_template_32.npy   # scripts/build_part_template.py

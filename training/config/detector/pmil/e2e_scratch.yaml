@@ -5,3 +5,4 @@ nEpochs: 20
 part_mil:
   freeze_base: false
   init_from: null
+test_times_per_epoch: null   # same test schedule as the original DFD-HR trainer (1x in epoch 0, then 2x)

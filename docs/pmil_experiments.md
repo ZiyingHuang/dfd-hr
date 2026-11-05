@@ -100,6 +100,12 @@ CHECKPOINT=outputs/pmil/train/pmil_main/test/avg/ckpt_best.pth USE_REGISTERED_TE
 RUN_ID=pmil_main_noreg bash scripts/run_pmil_eval.sh
 ```
 
+## 多卡训练注意
+
+训练中的 Celeb-DF-v2 测试只在 rank 0 上跑（32 帧 × 448，约 35 分钟），其他卡在 NCCL 里等待。
+原代码的 30 分钟超时会被触发，PMIL 配置已设为 `ddp_timeout_min: 360`。
+重训原版 DFD-HR 基线时同样需要：`DDP_TIMEOUT_MIN=360 bash scripts/run_dfd_hr.sh`。
+
 ## 结果不理想时的调整顺序
 
 1. `check_*.png` 中部位轮廓明显偏离某个数据集的平均脸 → 模板与该数据集裁剪不一致，先解决对齐。

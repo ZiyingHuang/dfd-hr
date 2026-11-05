@@ -241,7 +241,9 @@ def main():
         # dist.init_process_group(backend='gloo')
         dist.init_process_group(
             backend='nccl',
-            timeout=timedelta(minutes=30)
+            # rank 0 runs the whole test set alone while the other ranks wait in NCCL;
+            # 30 min is too short for 32-frame testing at 448px, so make it configurable.
+            timeout=timedelta(minutes=int(os.environ.get('DDP_TIMEOUT_MIN', config.get('ddp_timeout_min', 30))))
         )
         logger.addFilter(RankFilter(0))
     # prepare the training data loader
