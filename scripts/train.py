@@ -6,6 +6,7 @@
 import os
 import argparse
 from os.path import join
+from pathlib import Path
 import cv2
 import random
 import datetime
@@ -35,6 +36,7 @@ from metrics.utils import parse_metric_for_print
 from logger import create_logger, RankFilter
 
 from dataset.abstract_dataset import DeepfakeAbstractBaseDataset
+from output_paths import default_run_id, run_output_dir, validate_run_id
 
 parser = argparse.ArgumentParser(description='Process some paths.')
 parser.add_argument('--detector_path', type=str,
@@ -46,6 +48,9 @@ parser.add_argument('--no-save_ckpt', dest='save_ckpt', action='store_false', de
 parser.add_argument('--no-save_feat', dest='save_feat', action='store_false', default=True)
 parser.add_argument("--ddp", action='store_true', default=False)
 parser.add_argument('--local_rank', '--local-rank', type=int, default=0)
+parser.add_argument('--output_dir', type=str, default=None)
+parser.add_argument('--run_id', type=str, default=None)
+parser.add_argument('--output_group', type=str, default='deepfake')
 args = parser.parse_args()
 torch.cuda.set_device(args.local_rank)
 
@@ -200,6 +205,17 @@ def main():
         config['test_dataset'] = args.test_dataset
     config['save_ckpt'] = args.save_ckpt
     config['save_feat'] = args.save_feat
+    run_id = validate_run_id(args.run_id or os.environ.get('RUN_ID') or default_run_id())
+    project_root = Path(__file__).resolve().parents[1]
+    output_dir = (
+        Path(args.output_dir)
+        if args.output_dir
+        else run_output_dir(project_root, 'train', run_id, output_group=args.output_group)
+    )
+    config['log_dir'] = str(output_dir)
+    config['run_id'] = run_id
+    config['output_group'] = args.output_group
+    config['run_dir_is_final'] = True
     if config['lmdb']:
         config['dataset_json_folder'] = 'preprocessing/dataset_json_v3'
     # create logger
@@ -281,5 +297,5 @@ def main():
 
 
 if __name__ == '__main__':
-    # python3 -m torch.distributed.launch --nproc_per_node=4 training/train.py --detector_path ./training/config/detector/dfd_hr.yaml --train_dataset FaceForensics++  --test_dataset Celeb-DF-v2 --ddp
+    # python3 -m torch.distributed.launch --nproc_per_node=4 scripts/train.py --detector_path ./training/config/detector/dfd_hr.yaml --train_dataset FaceForensics++  --test_dataset Celeb-DF-v2 --ddp
     main()
