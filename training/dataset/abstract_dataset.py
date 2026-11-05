@@ -30,6 +30,7 @@ from torchvision import transforms as T
 import albumentations as A
 
 from dataset.albu import IsotropicResize
+from dataset.path_utils import resolve_rgb_path, sample_frame_paths
 from scipy.ndimage.filters import gaussian_filter
 
 FFpp_pool=['FaceForensics++','FaceShifter','DeepFakeDetection','FF-DF','FF-F2F','FF-FS','FF-NT']
@@ -219,27 +220,24 @@ class DeepfakeAbstractBaseDataset(data.Dataset):
                 if len(frame_paths)==0:
                     print(f"{unique_video_name} is None. Let's skip it.")
                     continue
-                # sorted video path to the lists
-                if self.video_level:
-                    if '\\' in frame_paths[0]:
-                        frame_paths = sorted(frame_paths, key=lambda x: int(x.split('\\')[-1].split('.')[0]))
-                    else:
-                        frame_paths = sorted(frame_paths, key=lambda x: int(x.split('/')[-1].split('.')[0]))
+                # Keep frame order deterministic before sampling.
+                frame_paths = sorted(
+                    frame_paths,
+                    key=lambda x: int(x.replace('\\', '/').rsplit('/', 1)[-1].split('.')[0]),
+                )
 
-
-                # Consider the case when the actual number of frames (e.g., 270) is larger than the specified (i.e., self.frame_num=32)
-                # In this case, we select self.frame_num frames from the original 270 frames
+                # The paper uses 8 training frames and 32 inference frames.
+                # For image-level evaluation, sample from the full manifest sequence.
                 total_frames = len(frame_paths)
-                if self.frame_num < total_frames:
-                    total_frames = self.frame_num
-                    if self.video_level:
+                if self.video_level:
+                    if self.frame_num < total_frames:
+                        total_frames = self.frame_num
                         # Select clip_size continuous frames
                         start_frame = random.randint(0, total_frames - self.frame_num)
                         frame_paths = frame_paths[start_frame:start_frame + self.frame_num]  # update total_frames
-                    else:
-                        # Select self.frame_num frames evenly distributed throughout the video
-                        step = total_frames // self.frame_num
-                        frame_paths = [frame_paths[i] for i in range(0, total_frames, step)][:self.frame_num]
+                else:
+                    frame_paths = sample_frame_paths(frame_paths, self.frame_num)
+                    total_frames = len(frame_paths)
 
                 # If video-level methods, crop clips from the selected frames if needed
                 if self.video_level:
@@ -492,6 +490,11 @@ class DeepfakeAbstractBaseDataset(data.Dataset):
 
         if not isinstance(image_paths, list):
             image_paths = [image_paths]  # for the image-level IO, only one frame is used
+        if not self.lmdb:
+            image_paths = [
+                resolve_rgb_path(image_path, self.config['dataset_root_rgb'])
+                for image_path in image_paths
+            ]
 
         image_tensors = []
         landmark_tensors = []
@@ -499,10 +502,6 @@ class DeepfakeAbstractBaseDataset(data.Dataset):
         augmentation_seed = None
 
         for image_path in image_paths:
-            if not os.path.exists(image_path) and not image_path.startswith('deepfakes_detection_datasets/'):
-                image_path = 'deepfakes_detection_datasets/' + image_path
-                image_path = image_path.replace('\\', '/')
-
             # Initialize a new seed for data augmentation at the start of each video
             if self.video_level and image_path == image_paths[0]:
                 augmentation_seed = random.randint(0, 2**32 - 1)
@@ -510,6 +509,9 @@ class DeepfakeAbstractBaseDataset(data.Dataset):
             # Get the mask and landmark paths
             mask_path = image_path.replace('frames', 'masks')  # Use .png for mask
             landmark_path = image_path.replace('frames', 'landmarks').replace('.png', '.npy')  # Use .npy for landmark
+            if not self.lmdb:
+                mask_path = resolve_rgb_path(mask_path, self.config['dataset_root_rgb'])
+                landmark_path = resolve_rgb_path(landmark_path, self.config['dataset_root_rgb'])
 
             # Load the image
             try:
