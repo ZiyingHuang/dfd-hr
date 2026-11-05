@@ -46,11 +46,31 @@ export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python HF_HUB_DISABLE_XET=1 \
        HF_HUB_DISABLE_TELEMETRY=1 NO_ALBUMENTATIONS_UPDATE=1 \
        PYTHONPATH="$PROJECT_ROOT:$PROJECT_ROOT/training"
 
-json_eval() {  # gpu name datasets...
-    local gpu="$1" name="$2"; shift 2
+# Dataset-level registered part templates (written by scripts/build_part_template.py for test sets
+# whose face crops differ from FF++). Only the PMIL branch uses them. USE_REGISTERED_TEMPLATES=0 disables.
+USE_REGISTERED_TEMPLATES="${USE_REGISTERED_TEMPLATES:-1}"
+IS_PMIL="$(python3 -c "from training.config_utils import load_detector_config as l; print(int(l('$DETECTOR')['model_name']=='dfd_hr_pmil'))")"
+DETECTOR_ABS="$(cd "$(dirname "$DETECTOR")" && pwd -P)/$(basename "$DETECTOR")"
+: > "$WORK_DIR/templates_used.txt"
+detector_for() {  # dataset -> detector yaml to use
+    local name="$1"
+    local tpl="$PROJECT_ROOT/training/config/part_template_32_${name}.npy"
+    if [[ "$IS_PMIL" == "1" && "$USE_REGISTERED_TEMPLATES" == "1" && -f "$tpl" ]]; then
+        local yaml="$WORK_DIR/detector_${name}.yaml"
+        printf '_base_: %s\npart_mil:\n  template_path: %s\n' "$DETECTOR_ABS" "$tpl" > "$yaml"
+        printf '%s\t%s\n' "$name" "$tpl" >> "$WORK_DIR/templates_used.txt"
+        printf '%s' "$yaml"
+    else
+        [[ "$IS_PMIL" == "1" ]] && printf '%s\tFF++ template\n' "$name" >> "$WORK_DIR/templates_used.txt"
+        printf '%s' "$DETECTOR"
+    fi
+}
+
+json_eval() {  # gpu dataset
+    local gpu="$1" name="$2"
     CUDA_VISIBLE_DEVICES="$gpu" python3 scripts/test.py \
-        --detector_path "$DETECTOR" --test_config "$TEST_CONFIG" \
-        --test_dataset "$@" --weights_path "$CHECKPOINT" \
+        --detector_path "$(detector_for "$name")" --test_config "$TEST_CONFIG" \
+        --test_dataset "$name" --weights_path "$CHECKPOINT" \
         --output_dir "$WORK_DIR" --run_id "$RUN_ID" --source_type json --quiet \
         > "$WORK_DIR/${name}_gpu${gpu}.log" 2>&1
 }
@@ -58,7 +78,7 @@ wdf_eval() {  # gpu
     local gpu="$1"
     CUDA_VISIBLE_DEVICES="$gpu" python3 scripts/evaluate_deepfake_testset.py \
         --root "$WDF_ROOT" --datasets WDF --checkpoint "$CHECKPOINT" \
-        --detector-path "$DETECTOR" --test-config "$TEST_CONFIG" \
+        --detector-path "$(detector_for WDF)" --test-config "$TEST_CONFIG" \
         --output-dir "$WORK_DIR" --run-id "$RUN_ID" --frame-num 32 --batch-size 32 \
         --source-type folder --quiet \
         > "$WORK_DIR/wdf_gpu${gpu}.log" 2>&1
@@ -66,15 +86,17 @@ wdf_eval() {  # gpu
 
 printf 'checkpoint=%s\ndetector=%s\nresults=%s\n' "$CHECKPOINT" "$DETECTOR" "$RESULT_DIR"
 pids=()
-json_eval "${GPU_LIST[0]}" cdf_fsh Celeb-DF-v2 FaceShifter & pids+=($!)
-json_eval "${GPU_LIST[1]}" dfd DeepFakeDetection & pids+=($!)
-json_eval "${GPU_LIST[2]}" dfdc DFDC & pids+=($!)
-( json_eval "${GPU_LIST[3]}" dfdcp DFDCP && wdf_eval "${GPU_LIST[3]}" ) & pids+=($!)
+( json_eval "${GPU_LIST[0]}" Celeb-DF-v2 && json_eval "${GPU_LIST[0]}" FaceShifter ) & pids+=($!)
+json_eval "${GPU_LIST[1]}" DeepFakeDetection & pids+=($!)
+json_eval "${GPU_LIST[2]}" DFDC & pids+=($!)
+( json_eval "${GPU_LIST[3]}" DFDCP && wdf_eval "${GPU_LIST[3]}" ) & pids+=($!)
 
 status=0
 for pid in "${pids[@]}"; do
     wait "$pid" || { printf 'worker failed: pid=%s (see %s)\n' "$pid" "$WORK_DIR" >&2; status=1; }
 done
+
+[[ "$IS_PMIL" == "1" ]] && { printf 'part templates used:\n'; cat "$WORK_DIR/templates_used.txt"; }
 
 set +e
 python3 scripts/finalize_evaluation.py \

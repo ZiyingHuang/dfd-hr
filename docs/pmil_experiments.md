@@ -50,10 +50,10 @@ PMIL 用一个固定的人脸部位模板（眼眉 / 鼻 / 嘴 / 轮廓融合带
 ```bash
 cd /path/to/dfd-hr && git fetch origin && git checkout pmil
 
-# 0) 生成部位模板 + 检查各数据集裁剪是否对齐（看 outputs/part_template/check_*.png）
+# 0) 生成部位模板，检查 6 个测试集的裁剪是否对齐，对不齐的测试集自动做数据集级配准
 python3 scripts/build_part_template.py \
-  --check "FF=/data/hjr/dfbench/rgb/FaceForensics++/original_sequences/youtube/c23/frames/*/*.png" \
-  --check "CDF=/data/hjr/dfbench/rgb/Celeb-DF-v2/Celeb-synthesis/frames/*/*.png" \
+  --check_json Celeb-DF-v2 --check_json FaceShifter --check_json DeepFakeDetection \
+  --check_json DFDC --check_json DFDCP \
   --check "WDF=/data/hjr/deepfake/testset/WDF/*/*/*/*/*.png"
 
 # 1) Exp-0 基线（同协议）
@@ -83,6 +83,21 @@ CHECKPOINT=$CKPT DETECTOR=training/config/detector/pmil/eval_orig_only.yaml RUN_
 
 python3 scripts/summarize_video_auc.py outputs/pmil/eval/baseline_6set/*.json outputs/pmil/eval/*_eval/*.json \
   outputs/pmil/eval/E1_part_only/*.json outputs/pmil/eval/E2_orig_only/*.json
+```
+
+## 测试集裁剪不一致：数据集级模板配准
+
+WDF 来自另一套预处理，人脸在画面里比 DeepfakeBench 的裁剪更大、更靠上，没有 landmark。
+`build_part_template.py` 对每个测试集取 1000 帧无标签图像的平均脸，与 FF++ 训练帧的平均脸做
+“缩放 + 平移”配准；偏差超过 4% 缩放或 0.5 个 token 时，生成 `training/config/part_template_32_<数据集>.npy`。
+`run_pmil_eval.sh` 评测该数据集时自动使用它（日志里会打印 `part templates used`）。
+
+- 只用测试图像的平均脸，不用标签、不用逐图 landmark，只影响 PMIL 分支；原 DFD-HR 分支和基线不受影响。
+- 论文里需如实说明，并报告 `USE_REGISTERED_TEMPLATES=0`（不配准）的 WDF 结果作为对照：
+
+```bash
+CHECKPOINT=outputs/pmil/train/pmil_main/test/avg/ckpt_best.pth USE_REGISTERED_TEMPLATES=0 \
+RUN_ID=pmil_main_noreg bash scripts/run_pmil_eval.sh
 ```
 
 ## 结果不理想时的调整顺序

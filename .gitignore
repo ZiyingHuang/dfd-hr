@@ -127,3 +127,6 @@ preprocessing/dataset_json/
 *.rej
 nohup.out
 core.*
+
+# PMIL part templates are generated per machine by scripts/build_part_template.py
+training/config/part_template_32*.npy
