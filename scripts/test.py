@@ -26,6 +26,7 @@ import torch.optim as optim
 
 from dataset.abstract_dataset import DeepfakeAbstractBaseDataset
 from output_paths import default_run_id, run_output_dir, validate_run_id
+from config_utils import load_detector_config
 
 from trainer.trainer import Trainer
 from detectors import DETECTOR
@@ -188,8 +189,7 @@ def save_test_results(metrics_all_datasets, config, weights_path):
 
 def main():
     # parse options and load config
-    with open(args.detector_path, 'r') as f:
-        config = yaml.safe_load(f)
+    config = load_detector_config(args.detector_path)
     with open(args.test_config, 'r') as f:
         config2 = yaml.safe_load(f)
     config.update(config2)

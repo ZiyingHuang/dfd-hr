@@ -1,0 +1,4 @@
+# Ablation A2: average the part logits instead of the MIL smooth-max.
+_base_: ../dfd_hr_pmil.yaml
+part_mil:
+  aggregate: mean

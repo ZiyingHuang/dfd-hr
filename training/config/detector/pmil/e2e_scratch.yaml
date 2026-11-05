@@ -1,0 +1,7 @@
+# Exp-2 (paper-level, slow): end-to-end training from CLIP, same 20-epoch protocol as DFD-HR.
+# Compare against DFD-HR retrained with the same script/seed (training/config/detector/dfd_hr.yaml).
+_base_: ../dfd_hr_pmil.yaml
+nEpochs: 20
+part_mil:
+  freeze_base: false
+  init_from: null

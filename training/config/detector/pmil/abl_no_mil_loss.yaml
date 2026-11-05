@@ -1,0 +1,4 @@
+# Ablation A3: supervise only the bag with BCE (no "every part of a real face is real" term).
+_base_: ../dfd_hr_pmil.yaml
+part_mil:
+  use_mil_loss: false

@@ -1,0 +1,4 @@
+# Ablation A4: drop the face-boundary (blending) band part, K=4.
+_base_: ../dfd_hr_pmil.yaml
+part_mil:
+  parts: [eyes_brows, nose, mouth, skin]

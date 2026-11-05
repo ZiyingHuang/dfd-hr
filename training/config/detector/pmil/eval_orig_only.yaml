@@ -1,0 +1,5 @@
+# EVAL-ONLY sanity check: use only the original DFD-HR logit.
+# On the main-experiment checkpoint this must reproduce the official checkpoint's numbers.
+_base_: ../dfd_hr_pmil.yaml
+part_mil:
+  fuse: orig

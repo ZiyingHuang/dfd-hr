@@ -1,0 +1,5 @@
+# EVAL-ONLY variant (no training): use only the PMIL bag logit for prediction.
+# Run the eval script with this config on the main-experiment checkpoint.
+_base_: ../dfd_hr_pmil.yaml
+part_mil:
+  fuse: part

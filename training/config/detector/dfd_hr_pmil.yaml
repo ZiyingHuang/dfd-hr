@@ -1,0 +1,27 @@
+# DFD-HR + Part-aware MIL Fusion (PMIL) -- MAIN EXPERIMENT (Exp-1, fast).
+# Starts from the official DFD-HR checkpoint, freezes it, and trains only the PMIL branch.
+# The original DFD-HR branch is therefore bit-identical to checkpoints/ckpt_best.pth,
+# so any AUC change comes from the new branch alone.
+_base_: dfd_hr.yaml
+
+model_name: dfd_hr_pmil
+log_dir: ./logs/pmil
+
+nEpochs: 3            # epochs 0..3 (4 passes); only ~1M parameters are trained
+
+part_mil:
+  template_path: ./training/config/part_template_32.npy   # scripts/build_part_template.py
+  parts: [eyes_brows, nose, mouth, boundary, skin]
+  num_heads: 8
+  tau: 0.5              # smooth-max temperature of the MIL bag
+  learnable_tau: false
+  mask_eps: 0.02        # floor of the part mask -> max attention penalty log(0.02) ~ -3.9
+  mil_weight: 0.5       # weight of the MIL loss (end-to-end mode only)
+  real_weight: 1.0      # weight of "every part of a real face is real"
+  fuse: avg             # avg | orig | part -> logit used for prediction
+  fuse_alpha: 0.5       # weight of the part branch when fuse=avg (fixed a priori, not tuned on test)
+  aggregate: lse        # lse | mean
+  use_mil_loss: true    # false -> bag-only BCE
+  uniform_mask: false   # true -> K free queries without part prior
+  freeze_base: true
+  init_from: ./checkpoints/ckpt_best.pth

@@ -54,8 +54,9 @@ def load_model(detector_path, test_config_path, checkpoint_path, device):
     import yaml
     from training.detectors import DETECTOR
 
-    with Path(detector_path).open(encoding='utf-8') as handle:
-        config = yaml.safe_load(handle)
+    from training.config_utils import load_detector_config
+
+    config = load_detector_config(detector_path)
     with Path(test_config_path).open(encoding='utf-8') as handle:
         config.update(yaml.safe_load(handle))
     config['frame_num']['test'] = 32

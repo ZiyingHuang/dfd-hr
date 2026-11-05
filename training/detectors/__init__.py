@@ -9,3 +9,4 @@ sys.path.append(project_root_dir)
 from metrics.registry import DETECTOR
 
 from .dfd_hr_detector import DFDHRDetector
+from .dfd_hr_pmil_detector import DFDHRPMILDetector

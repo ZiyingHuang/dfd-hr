@@ -1,0 +1,4 @@
+# Ablation A1: K learnable queries WITHOUT the facial part prior (QTFP-style free queries).
+_base_: ../dfd_hr_pmil.yaml
+part_mil:
+  uniform_mask: true

@@ -1,0 +1,5 @@
+# Ablation A5: a single whole-face query (K=1, no part decomposition).
+_base_: ../dfd_hr_pmil.yaml
+part_mil:
+  parts: [skin]
+  uniform_mask: true
