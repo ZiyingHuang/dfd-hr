@@ -69,7 +69,9 @@ class Trainer(object):
         # get current time
         self.timenow = time_now
         # create directory path
-        if 'task_target' not in config:
+        if config.get('run_dir_is_final', False):
+            self.log_dir = self.config['log_dir']
+        elif 'task_target' not in config:
             self.log_dir = os.path.join(
                 self.config['log_dir'],
                 self.config['model_name'] + '_' + self.timenow
