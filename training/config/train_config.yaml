@@ -1,9 +1,11 @@
 mode: train
 lmdb: False
 dry_run: false
-dataset_root_rgb: './datasets'
+dataset_root_rgb: '/data/hjr/dfbench/rgb'
 lmdb_dir:  'I:\transform_2_lmdb'
-dataset_json_folder: './preprocessing/dataset_json'
+dataset_json_folder: '/data/hjr/dfbench/dataset_json'
+# Paper protocol: 8 training frames and 32 inference frames.
+frame_num: {'train': 8, 'test': 32}
 SWA: False
 
 # label settings
