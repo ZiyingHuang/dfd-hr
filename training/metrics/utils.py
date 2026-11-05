@@ -101,3 +101,18 @@ def get_test_metrics(y_pred, y_true, img_names):
         v_acc=acc
         return {'acc': acc, 'auc': auc, 'eer': eer, 'ap': ap, 'pred': y_pred, 'video_auc': v_auc, 'video_eer': v_eer, 'video_acc': v_acc, 'label': y_true}
 
+
+
+def summarize_test_metrics(metrics_all_datasets):
+    """Keep scalar test metrics while excluding per-frame prediction arrays."""
+    summary = {}
+    for dataset_name, metrics_dict in metrics_all_datasets.items():
+        summary[dataset_name] = {}
+        for metric_name, value in metrics_dict.items():
+            if metric_name in {'pred', 'label'}:
+                continue
+            if isinstance(value, np.generic):
+                value = value.item()
+            if isinstance(value, (int, float)):
+                summary[dataset_name][metric_name] = float(value)
+    return summary
