@@ -141,6 +141,7 @@ class DFDHRDetector(AbstractDetector):
         all_attentions = () if output_attentions else None
 
         hidden_states = inputs_embeds
+        loss_spearman = hidden_states.new_zeros(())
 
         # MoD full-layer drop (gumbel exit).
         batch_size = hidden_states.size(0)
