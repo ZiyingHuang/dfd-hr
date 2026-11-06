@@ -1,0 +1,24 @@
+{
+  "checkpoint": "/home/huangjunrong/deepfake/main/DFD-HR/checkpoints/ckpt_best.pth",
+  "dataset_json_folder": "/data/hjr/dfbench/dataset_json",
+  "dataset_root_rgb": "/data/hjr/dfbench/rgb",
+  "datasets": [
+    "DFDC"
+  ],
+  "frame_num_test": 32,
+  "lmdb": false,
+  "metrics": {
+    "DFDC": {
+      "acc": 0.7473281056041661,
+      "ap": 0.8806960064890441,
+      "auc": 0.8585035430151018,
+      "eer": 0.23030111436023076,
+      "video_acc": 0.7638180272108843,
+      "video_auc": 0.8927257489555713,
+      "video_eer": 0.19222462203023757
+    }
+  },
+  "mode": "test",
+  "test_batch_size": 32,
+  "timestamp": "2026-10-18T18:36:18"
+}
