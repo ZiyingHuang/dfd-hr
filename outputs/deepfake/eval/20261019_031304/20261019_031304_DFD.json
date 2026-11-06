@@ -1,0 +1,22 @@
+{
+  "batch_size": 32,
+  "checkpoint": "/home/huangjunrong/deepfake/main/DFD-HR/checkpoints/ckpt_best.pth",
+  "dataset": "DFD",
+  "dataset_root": "/data/hjr/deepfake/testset",
+  "frame_num": 32,
+  "metrics": {
+    "acc": 0.9058068281295594,
+    "ap": 0.9934156445829863,
+    "auc": 0.947766329326975,
+    "eer": 0.12837465564738293,
+    "fake_videos": 3064,
+    "num_frames": 17135,
+    "num_videos": 3427,
+    "real_videos": 363,
+    "video_acc": 0.9369711117595565,
+    "video_auc": 0.9719509958354012,
+    "video_eer": 0.08539944903581267
+  },
+  "run_id": "20261019_031304",
+  "source": "deepfake"
+}
