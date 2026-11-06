@@ -1,0 +1,4 @@
+# EVAL-ONLY on a v2 checkpoint: 0.5 * original logit + 0.5 * part bag logit.
+_base_: ../dfd_hr_pmil_v2.yaml
+part_mil:
+  fuse: avg

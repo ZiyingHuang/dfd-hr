@@ -1,0 +1,32 @@
+# PMIL v2 -- MAIN EXPERIMENT after the v1 diagnosis (outputs/pmil/diagnose/pmil_main/diagnosis.md).
+#
+# v1 problems -> v2 fixes
+#   MIL collapse: 4/5 part heads stuck at -8.6, "skin" did everything
+#       -> per-part labels from the FF++ manipulation masks (supervision: mask)
+#   part queries attended ~300 tokens (prior too soft)
+#       -> mask_eps 1e-3 (outside-part penalty log(1e-3) = -6.9)
+#   frozen patch tokens carry no generalisable local cue (part branch 81.5 vs 92.6 AUC)
+#       -> fine-tune the trainable DFD-HR modules too (lr x0.1), part supervision acts as an
+#          auxiliary task that shapes the shared features
+#   fusing a weaker branch only hurt
+#       -> predict with the original DFD-HR head (fuse: orig): zero extra inference cost.
+#          The fused / part-only scores are reported from the same checkpoint (pmil/v2_eval_*.yaml).
+#
+# Control (must be run): pmil/v2_control_finetune.yaml = identical fine-tuning without part loss.
+_base_: dfd_hr_pmil.yaml
+
+with_mask: true
+nEpochs: 3
+test_times_per_epoch: 1
+ddp_timeout_min: 360
+
+part_mil:
+  supervision: mask
+  part_label_thr: 0.2     # a part is "fake" if >20% of it lies inside the manipulation mask
+  part_weight: 1.0        # per-part BCE weight inside the part loss
+  mask_eps: 0.001
+  freeze_base: false
+  init_from: ./checkpoints/ckpt_best.pth
+  base_lr_scale: 0.1      # DFD-HR modules at 1e-5, PMIL branch at 1e-4
+  mil_weight: 0.5         # weight of the whole part loss in the total loss
+  fuse: orig

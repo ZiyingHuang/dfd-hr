@@ -122,11 +122,18 @@ def prepare_testing_data(config):
     return test_data_loaders
 
 
+def _param_groups(model, lr):
+    # Detectors may define per-module learning rates (e.g. PMIL fine-tuning).
+    if hasattr(model, 'optimizer_param_groups'):
+        return model.optimizer_param_groups(lr)
+    return model.parameters()
+
+
 def choose_optimizer(model, config):
     opt_name = config['optimizer']['type']
     if opt_name == 'sgd':
         optimizer = optim.SGD(
-            params=model.parameters(),
+            params=_param_groups(model, config['optimizer'][opt_name]['lr']),
             lr=config['optimizer'][opt_name]['lr'],
             momentum=config['optimizer'][opt_name]['momentum'],
             weight_decay=config['optimizer'][opt_name]['weight_decay']
@@ -134,7 +141,7 @@ def choose_optimizer(model, config):
         return optimizer
     elif opt_name == 'adam':
         optimizer = optim.Adam(
-            params=model.parameters(),
+            params=_param_groups(model, config['optimizer'][opt_name]['lr']),
             lr=config['optimizer'][opt_name]['lr'],
             weight_decay=config['optimizer'][opt_name]['weight_decay'],
             betas=(config['optimizer'][opt_name]['beta1'], config['optimizer'][opt_name]['beta2']),

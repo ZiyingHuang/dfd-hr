@@ -35,3 +35,23 @@ def test_per_image_masks_and_loss_backward():
     assert torch.isfinite(loss) and module.part_query.grad is not None
     only_fake = part_mil_loss(part_logits.detach(), bag.detach(), torch.tensor([1, 1, 1, 1]))
     assert torch.isfinite(only_fake)
+
+
+def test_mask_part_labels():
+    from training.detectors.utils.part_mil import mask_part_labels, part_mask_loss
+
+    G = 4
+    parts = torch.zeros(2, G * G)
+    parts[0, :4] = 1            # top row
+    parts[1, 12:] = 1           # bottom row
+    mask = torch.zeros(3, 8, 8, 1)
+    mask[1, :2] = 1             # fake: manipulated top rows only
+    label = torch.tensor([0, 1, 1])  # sample 2 is fake with an empty mask -> invalid
+    targets, valid, ratio = mask_part_labels(mask, parts, label, thr=0.2)
+    assert targets.tolist() == [[0, 0], [1, 0], [0, 0]]
+    assert valid.tolist() == [True, True, False]
+    assert abs(ratio[1, 0].item() - 1.0) < 1e-6
+    logits = torch.zeros(3, 2, requires_grad=True)
+    loss = part_mask_loss(logits, logits.mean(1), label, targets, valid)
+    loss.backward()
+    assert torch.isfinite(loss)

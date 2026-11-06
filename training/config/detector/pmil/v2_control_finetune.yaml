@@ -1,0 +1,5 @@
+# Control for v2: the same fine-tuning schedule (init, lr, epochs, masks loaded) WITHOUT any part loss.
+# v2 - control isolates the effect of part supervision from "trained a few more epochs".
+_base_: ../dfd_hr_pmil_v2.yaml
+part_mil:
+  mil_weight: 0.0

@@ -112,3 +112,29 @@ RUN_ID=pmil_main_noreg bash scripts/run_pmil_eval.sh
 2. `E1` 部位分支单独 AUC 很低 → 加大 `nEpochs`，或把 `mask_eps` 从 0.02 调到 0.05（先验更软）。
 3. `E1` 不低但融合后提升小 → 两个分支相关性太高，改跑 Exp-2 端到端。
 4. 不要在测试集上调 `fuse_alpha`；它固定为 0.5。
+
+## v2（2026-11-06，根据 v1 诊断修改）
+
+v1 诊断（`outputs/pmil/diagnose/pmil_main/diagnosis.md`）：
+- 原分支 92.64 = 基线，代码正确；部位分支只有 81.54，所有融合方式都不超过基线。
+- MIL 坍缩：眼眉/鼻/嘴/轮廓 4 个部位头对所有帧输出约 -8.6，“脸颊”头包揽全部判断。
+- 注意力熵 5.6–5.8 nats（约 300 个 token），部位先验太软。
+
+v2 改动（`training/config/detector/dfd_hr_pmil_v2.yaml`）：
+1. 部位标签来自 FF++ 篡改 mask：部位面积 >20% 落在 mask 内即为“假”，真脸所有部位为“真”。
+2. `mask_eps` 0.02 → 0.001，query 真正只看本部位。
+3. 解冻 DFD-HR 可训练模块（lr ×0.1），部位监督作为辅助任务改变共享特征。
+4. 用原分类头预测（推理零额外开销）；融合 / 只用部位分支的结果用同一 checkpoint 评测。
+5. 对照组 `pmil/v2_control_finetune.yaml`：完全相同的微调，但不加部位损失。
+
+```bash
+python3 scripts/check_part_labels.py      # 先确认 mask 标签合理（CPU，约 1 分钟）
+DETECTOR=training/config/detector/dfd_hr_pmil_v2.yaml RUN_ID=pmil_v2 bash scripts/run_pmil_train.sh
+DETECTOR=training/config/detector/pmil/v2_control_finetune.yaml RUN_ID=v2_control bash scripts/run_pmil_train.sh
+python3 scripts/summarize_video_auc.py \
+  outputs/pmil/eval/v2_control_eval/pmil_v2_control_eval.json \
+  outputs/pmil/eval/pmil_v2_eval/pmil_pmil_v2_eval.json
+# 各分支 / 部位 / 融合方式（不重训）
+CHECKPOINT=outputs/pmil/train/pmil_v2/test/avg/ckpt_best.pth \
+DETECTOR=training/config/detector/dfd_hr_pmil_v2.yaml bash scripts/run_pmil_diagnose.sh
+```

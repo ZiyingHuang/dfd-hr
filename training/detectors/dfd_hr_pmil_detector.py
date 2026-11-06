@@ -25,7 +25,7 @@ import torch.nn.functional as F
 from detectors import DETECTOR
 from .dfd_hr_detector import DFDHRDetector
 from .utils.core_query_part import forward_query_loss_with_local
-from .utils.part_mil import PartMILFusion, part_mil_loss
+from .utils.part_mil import PartMILFusion, mask_part_labels, part_mask_loss, part_mil_loss
 from .utils.part_prior import PART_NAMES
 
 logger = logging.getLogger(__name__)
@@ -76,6 +76,13 @@ class DFDHRPMILDetector(DFDHRDetector):
         self.aggregate_mode = pcfg.get('aggregate', 'lse')  # lse | mean
         self.use_mil_loss = pcfg.get('use_mil_loss', True)
         self.freeze_base = pcfg.get('freeze_base', False)
+        # 'mil': weak MIL supervision; 'mask': per-part labels from the FF++ manipulation masks
+        self.supervision = pcfg.get('supervision', 'mil')
+        self.part_label_thr = pcfg.get('part_label_thr', 0.2)
+        self.part_weight = pcfg.get('part_weight', 1.0)
+        self.base_lr_scale = pcfg.get('base_lr_scale', 1.0)
+        if self.supervision == 'mask' and not config.get('with_mask', False):
+            raise ValueError("part_mil.supervision=mask requires with_mask: true")
 
         # Load the official / previous DFD-HR weights only when training;
         # evaluation loads the full checkpoint with strict=True anyway.
@@ -90,7 +97,19 @@ class DFDHRPMILDetector(DFDHRDetector):
         logger.info(f'[PMIL] parts={parts} grid={self.grid} freeze_base={self.freeze_base} '
                     f'init_from={init_from} trainable_params={n_train}')
         print(f'[PMIL] parts={parts} grid={self.grid} freeze_base={self.freeze_base} '
+              f'supervision={self.supervision} base_lr_scale={self.base_lr_scale} '
               f'trainable_params={n_train}')
+
+    def optimizer_param_groups(self, lr):
+        """PMIL branch at the base lr; the (pre-trained) DFD-HR modules at lr * base_lr_scale."""
+        new, base = [], []
+        for name, param in self.named_parameters():
+            if param.requires_grad:
+                (new if name.startswith('part_fusion.') else base).append(param)
+        groups = [{'params': new, 'lr': lr}]
+        if base:
+            groups.append({'params': base, 'lr': lr * self.base_lr_scale})
+        return groups
 
     def _load_base(self, path):
         ckpt = torch.load(path, map_location='cpu')
@@ -156,7 +175,12 @@ class DFDHRPMILDetector(DFDHRDetector):
 
     def get_losses(self, data_dict: dict, pred_dict: dict) -> dict:
         label = data_dict['label']
-        if self.use_mil_loss:
+        mask = data_dict.get('mask')
+        if self.supervision == 'mask' and mask is not None:
+            targets, valid, _ = mask_part_labels(mask, self.part_masks, label, self.part_label_thr)
+            loss_part = part_mask_loss(pred_dict['part_logits'], pred_dict['bag_logit'], label,
+                                       targets, valid, self.part_weight)
+        elif self.use_mil_loss:
             loss_part = part_mil_loss(pred_dict['part_logits'], pred_dict['bag_logit'], label,
                                       real_weight=self.real_weight)
         else:  # ablation: plain BCE on the bag only
