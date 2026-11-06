@@ -1,0 +1,180 @@
+{
+  "averages": {
+    "all_completed": {
+      "acc": 0.7663777557006105,
+      "ap": 0.8876897486967215,
+      "auc": 0.8553876207608845,
+      "eer": 0.22289834793107885,
+      "video_acc": 0.8081666736076958,
+      "video_auc": 0.8982419346099335,
+      "video_eer": 0.18106910273323343
+    },
+    "by_source_type": {
+      "folder": {
+        "acc": 0.6687755861555639,
+        "ap": 0.8350174849756931,
+        "auc": 0.8199775892305154,
+        "eer": 0.26704545454545453,
+        "video_acc": 0.6724565756823822,
+        "video_auc": 0.8471483123922148,
+        "video_eer": 0.25252525252525254
+      },
+      "json": {
+        "acc": 0.7858981896096199,
+        "ap": 0.8982242014409272,
+        "auc": 0.8624696270669581,
+        "eer": 0.2140689266082037,
+        "video_acc": 0.8353086931927585,
+        "video_auc": 0.9084606590534772,
+        "video_eer": 0.1667778727748296
+      }
+    }
+  },
+  "completed_datasets": [
+    "Celeb-DF-v2",
+    "FaceShifter",
+    "DeepFakeDetection",
+    "DFDC",
+    "DFDCP",
+    "WDF"
+  ],
+  "datasets": {
+    "Celeb-DF-v2": {
+      "metrics": {
+        "acc": 0.8072472594397077,
+        "ap": 0.9215761070432688,
+        "auc": 0.8700909450375645,
+        "eer": 0.2110320284697509,
+        "video_acc": 0.8938223938223938,
+        "video_auc": 0.9465465961665566,
+        "video_eer": 0.1348314606741573
+      },
+      "provenance": {
+        "checkpoint": "/home/huangjunrong/deepfake/dfd-hr/outputs/pmil/train/pmil_main/test/avg/ckpt_best.pth",
+        "dataset_json_folder": "/data/hjr/dfbench/dataset_json",
+        "dataset_root_rgb": "/data/hjr/dfbench/rgb",
+        "source": "/data/hjr/dfbench/dataset_json"
+      },
+      "source": "/data/hjr/dfbench/dataset_json",
+      "source_type": "json"
+    },
+    "DFDC": {
+      "metrics": {
+        "acc": 0.7452920161070574,
+        "ap": 0.8416330868990793,
+        "auc": 0.8269231798039702,
+        "eer": 0.253963486920098,
+        "video_acc": 0.7803996598639455,
+        "video_auc": 0.855243660875485,
+        "video_eer": 0.21943844492440603
+      },
+      "provenance": {
+        "checkpoint": "/home/huangjunrong/deepfake/dfd-hr/outputs/pmil/train/pmil_main/test/avg/ckpt_best.pth",
+        "dataset_json_folder": "/data/hjr/dfbench/dataset_json",
+        "dataset_root_rgb": "/data/hjr/dfbench/rgb",
+        "source": "/data/hjr/dfbench/dataset_json"
+      },
+      "source": "/data/hjr/dfbench/dataset_json",
+      "source_type": "json"
+    },
+    "DFDCP": {
+      "metrics": {
+        "acc": 0.7809197538032748,
+        "ap": 0.9225129587949124,
+        "auc": 0.8607616536438073,
+        "eer": 0.22216573462125064,
+        "video_acc": 0.8266871165644172,
+        "video_auc": 0.8977848753348443,
+        "video_eer": 0.17391304347826086
+      },
+      "provenance": {
+        "checkpoint": "/home/huangjunrong/deepfake/dfd-hr/outputs/pmil/train/pmil_main/test/avg/ckpt_best.pth",
+        "dataset_json_folder": "/data/hjr/dfbench/dataset_json",
+        "dataset_root_rgb": "/data/hjr/dfbench/rgb",
+        "source": "/data/hjr/dfbench/dataset_json"
+      },
+      "source": "/data/hjr/dfbench/dataset_json",
+      "source_type": "json"
+    },
+    "DeepFakeDetection": {
+      "metrics": {
+        "acc": 0.8863869086511736,
+        "ap": 0.9930184755326643,
+        "auc": 0.942900054745129,
+        "eer": 0.12419700214132762,
+        "video_acc": 0.9256342957130359,
+        "video_auc": 0.9782893873802965,
+        "video_eer": 0.07713498622589532
+      },
+      "provenance": {
+        "checkpoint": "/home/huangjunrong/deepfake/dfd-hr/outputs/pmil/train/pmil_main/test/avg/ckpt_best.pth",
+        "dataset_json_folder": "/data/hjr/dfbench/dataset_json",
+        "dataset_root_rgb": "/data/hjr/dfbench/rgb",
+        "source": "/data/hjr/dfbench/dataset_json"
+      },
+      "source": "/data/hjr/dfbench/dataset_json",
+      "source_type": "json"
+    },
+    "FaceShifter": {
+      "metrics": {
+        "acc": 0.7096450100468855,
+        "ap": 0.8123803789347113,
+        "auc": 0.8116723021043204,
+        "eer": 0.2589863808885912,
+        "video_acc": 0.75,
+        "video_auc": 0.8644387755102041,
+        "video_eer": 0.22857142857142856
+      },
+      "provenance": {
+        "checkpoint": "/home/huangjunrong/deepfake/dfd-hr/outputs/pmil/train/pmil_main/test/avg/ckpt_best.pth",
+        "dataset_json_folder": "/data/hjr/dfbench/dataset_json",
+        "dataset_root_rgb": "/data/hjr/dfbench/rgb",
+        "source": "/data/hjr/dfbench/dataset_json"
+      },
+      "source": "/data/hjr/dfbench/dataset_json",
+      "source_type": "json"
+    },
+    "WDF": {
+      "metrics": {
+        "acc": 0.6687755861555639,
+        "ap": 0.8350174849756931,
+        "auc": 0.8199775892305154,
+        "eer": 0.26704545454545453,
+        "fake_videos": 410,
+        "num_frames": 16122,
+        "num_videos": 806,
+        "real_videos": 396,
+        "video_acc": 0.6724565756823822,
+        "video_auc": 0.8471483123922148,
+        "video_eer": 0.25252525252525254
+      },
+      "provenance": {
+        "checkpoint": "/home/huangjunrong/deepfake/dfd-hr/outputs/pmil/train/pmil_main/test/avg/ckpt_best.pth",
+        "dataset_root": "/data/hjr/deepfake/testset",
+        "source": "deepfake"
+      },
+      "source": "deepfake",
+      "source_type": "folder"
+    }
+  },
+  "errors": [],
+  "ignored_results": [],
+  "missing_metrics": {},
+  "namespace": "pmil",
+  "requested_datasets": [
+    "Celeb-DF-v2",
+    "FaceShifter",
+    "DeepFakeDetection",
+    "DFDC",
+    "DFDCP",
+    "WDF"
+  ],
+  "run_id": "pmil_main_eval",
+  "status": "complete",
+  "totals": {
+    "fake_videos": 410,
+    "num_frames": 16122,
+    "num_videos": 806,
+    "real_videos": 396
+  }
+}

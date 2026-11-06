@@ -1,0 +1,26 @@
+{
+  "checkpoint": "/home/huangjunrong/deepfake/dfd-hr/outputs/pmil/train/pmil_main/test/avg/ckpt_best.pth",
+  "dataset_json_folder": "/data/hjr/dfbench/dataset_json",
+  "dataset_root_rgb": "/data/hjr/dfbench/rgb",
+  "datasets": [
+    "Celeb-DF-v2"
+  ],
+  "frame_num_test": 32,
+  "lmdb": false,
+  "metrics": {
+    "Celeb-DF-v2": {
+      "acc": 0.8072472594397077,
+      "ap": 0.9215761070432688,
+      "auc": 0.8700909450375645,
+      "eer": 0.2110320284697509,
+      "video_acc": 0.8938223938223938,
+      "video_auc": 0.9465465961665566,
+      "video_eer": 0.1348314606741573
+    }
+  },
+  "mode": "test",
+  "source": "/data/hjr/dfbench/dataset_json",
+  "source_type": "json",
+  "test_batch_size": 32,
+  "timestamp": "2026-11-05T17:18:00"
+}
