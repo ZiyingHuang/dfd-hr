@@ -1,0 +1,71 @@
+/root/my_env/lib/python3.10/site-packages/transformers/tokenization_utils_base.py:1601: FutureWarning: `clean_up_tokenization_spaces` was not set. It will be set to `True` by default. This behavior will be depracted in transformers v4.45, and will be then set to `False` by default. For more details check this issue: https://github.com/huggingface/transformers/issues/31884
+  warnings.warn(
+/root/my_env/lib/python3.10/site-packages/albumentations/augmentations/transforms.py:688: FutureWarning: This class has been deprecated. Please use CoarseDropout
+  warnings.warn(
+[PMIL] parts=['eyes_brows', 'nose', 'mouth', 'boundary', 'skin'] grid=32 freeze_base=True trainable_params=2371589
+[DeepFakeDetection] 32 frames
+[DeepFakeDetection] 1632 frames
+[DeepFakeDetection] 3232 frames
+[DeepFakeDetection] 4832 frames
+[DeepFakeDetection] 6432 frames
+[DeepFakeDetection] 8032 frames
+[DeepFakeDetection] 9632 frames
+[DeepFakeDetection] 11232 frames
+[DeepFakeDetection] 12832 frames
+[DeepFakeDetection] 14432 frames
+[DeepFakeDetection] 16032 frames
+[DeepFakeDetection] 17632 frames
+[DeepFakeDetection] 19232 frames
+[DeepFakeDetection] 20832 frames
+[DeepFakeDetection] 22432 frames
+[DeepFakeDetection] 24032 frames
+[DeepFakeDetection] 25632 frames
+[DeepFakeDetection] 27232 frames
+[DeepFakeDetection] 28832 frames
+[DeepFakeDetection] 30432 frames
+[DeepFakeDetection] 32032 frames
+[DeepFakeDetection] 33632 frames
+[DeepFakeDetection] 35232 frames
+[DeepFakeDetection] 36832 frames
+[DeepFakeDetection] 38432 frames
+[DeepFakeDetection] 40032 frames
+[DeepFakeDetection] 41632 frames
+[DeepFakeDetection] 43232 frames
+[DeepFakeDetection] 44832 frames
+[DeepFakeDetection] 46432 frames
+[DeepFakeDetection] 48032 frames
+[DeepFakeDetection] 49632 frames
+[DeepFakeDetection] 51232 frames
+[DeepFakeDetection] 52832 frames
+[DeepFakeDetection] 54432 frames
+[DeepFakeDetection] 56032 frames
+[DeepFakeDetection] 57632 frames
+[DeepFakeDetection] 59232 frames
+[DeepFakeDetection] 60832 frames
+[DeepFakeDetection] 62432 frames
+[DeepFakeDetection] 64032 frames
+[DeepFakeDetection] 65632 frames
+[DeepFakeDetection] 67232 frames
+[DeepFakeDetection] 68832 frames
+[DeepFakeDetection] 70432 frames
+[DeepFakeDetection] 72032 frames
+[DeepFakeDetection] 73632 frames
+[DeepFakeDetection] 75232 frames
+[DeepFakeDetection] 76832 frames
+[DeepFakeDetection] 78432 frames
+[DeepFakeDetection] 80032 frames
+[DeepFakeDetection] 81632 frames
+[DeepFakeDetection] 83232 frames
+[DeepFakeDetection] 84832 frames
+[DeepFakeDetection] 86432 frames
+[DeepFakeDetection] 88032 frames
+[DeepFakeDetection] 89632 frames
+[DeepFakeDetection] 91232 frames
+[DeepFakeDetection] 92832 frames
+[DeepFakeDetection] 94432 frames
+[DeepFakeDetection] 96032 frames
+[DeepFakeDetection] 97632 frames
+[DeepFakeDetection] 99232 frames
+[DeepFakeDetection] 100832 frames
+[DeepFakeDetection] 102432 frames
+saved outputs/pmil/diagnose/pmil_main/DeepFakeDetection.npz
