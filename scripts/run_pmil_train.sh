@@ -37,6 +37,7 @@ cp "$DETECTOR" "$OUTPUT_DIR/detector_config.yaml"
 export PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python HF_HUB_DISABLE_XET=1 \
        HF_HUB_DISABLE_TELEMETRY=1 NO_ALBUMENTATIONS_UPDATE=1 \
        PYTHONPATH="$PROJECT_ROOT:$PROJECT_ROOT/training${PYTHONPATH:+:$PYTHONPATH}"
+export PYTORCH_CUDA_ALLOC_CONF="${PYTORCH_CUDA_ALLOC_CONF:-expandable_segments:True}"  # less fragmentation
 
 # Same protocol as scripts/run_dfd_hr.sh: train on FF++ c23, select the checkpoint on Celeb-DF-v2.
 python3 -m torch.distributed.launch \

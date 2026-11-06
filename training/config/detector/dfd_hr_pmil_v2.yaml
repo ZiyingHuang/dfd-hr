@@ -19,6 +19,7 @@ with_mask: true
 nEpochs: 3
 test_times_per_epoch: 1
 ddp_timeout_min: 360
+train_batchSize: 16       # per GPU; if it still runs out of memory set 8 (the control inherits this)
 
 part_mil:
   supervision: mask
@@ -28,5 +29,6 @@ part_mil:
   freeze_base: false
   init_from: ./checkpoints/ckpt_best.pth
   base_lr_scale: 0.1      # DFD-HR modules at 1e-5, PMIL branch at 1e-4
+  unfreeze_from_layer: 16 # fine-tune adapters/routers of layers 16-23 only (fits 4x RTX 3090, 24 GB)
   mil_weight: 0.5         # weight of the whole part loss in the total loss
   fuse: orig

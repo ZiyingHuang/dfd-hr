@@ -92,6 +92,15 @@ class DFDHRPMILDetector(DFDHRDetector):
         if self.freeze_base:
             for name, param in self.named_parameters():
                 param.requires_grad = name.startswith('part_fusion.')
+        else:
+            # Fine-tune only the DFD-HR modules of the last layers: earlier layers then build no
+            # autograd graph (CLIP is frozen), which keeps ViT-L x 5 crops within 24 GB GPUs.
+            self.unfreeze_from_layer = pcfg.get('unfreeze_from_layer', 0)
+            if self.unfreeze_from_layer > 0:
+                per_layer = ('adapters_attn.', 'adapters_mlp.', 'token_router.', 'layer_router.')
+                for name, param in self.named_parameters():
+                    if name.startswith(per_layer) and int(name.split('.')[1]) < self.unfreeze_from_layer:
+                        param.requires_grad = False
 
         n_train = sum(p.numel() for p in self.parameters() if p.requires_grad)
         logger.info(f'[PMIL] parts={parts} grid={self.grid} freeze_base={self.freeze_base} '
