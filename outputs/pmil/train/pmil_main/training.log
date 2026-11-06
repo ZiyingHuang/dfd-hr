@@ -1,0 +1,320 @@
+2026-11-05 13:30:42,962 - INFO - Save log to /home/huangjunrong/deepfake/dfd-hr/outputs/pmil/train/pmil_main
+2026-11-05 13:30:42,962 - INFO - --------------- Configuration ---------------
+2026-11-05 13:30:42,962 - INFO - Parameters: 
+log_dir: /home/huangjunrong/deepfake/dfd-hr/outputs/pmil/train/pmil_main
+model_name: dfd_hr_pmil
+backbone_name: ViT-L/14_proj
+backbone_config: {'mode': 'original', 'num_classes': 2, 'inc': 3, 'dropout': False, 'layer': 24, 'remain_layer': 20, 'capacity': 0.75}
+all_dataset: ['FaceForensics++', 'Celeb-DF-v2', 'FaceShifter', 'DeepFakeDetection', 'DFDC', 'DFDCP', 'test_DFR', 'test_WDF', 'test_FFIW', 'uniface_ff', 'blendface_ff', 'mobileswap_ff', 'e4s_ff', 'facedancer_ff', 'fsgan_ff', 'inswap_ff', 'simswap_ff']
+train_dataset: ['FaceForensics++']
+test_dataset: ['Celeb-DF-v2']
+compression: c23
+train_batchSize: 16
+test_batchSize: 32
+workers: 8
+resolution: 448
+with_mask: False
+with_landmark: False
+use_data_augmentation: True
+mean: [0.48145466, 0.4578275, 0.40821073]
+std: [0.26862954, 0.26130258, 0.27577711]
+optimizer: {'type': 'adam', 'adam': {'lr': 0.0001, 'beta1': 0.9, 'beta2': 0.999, 'eps': 1e-08, 'weight_decay': 0.0005, 'amsgrad': False}, 'sgd': {'lr': 0.0002, 'momentum': 0.9, 'weight_decay': 0.0005}}
+lr_scheduler: None
+nEpochs: 3
+start_epoch: 0
+save_epoch: 1
+rec_iter: 100
+logdir: ./logs
+manualSeed: 1024
+save_ckpt: True
+save_feat: False
+loss_func: cross_entropy
+losstype: None
+metric_scoring: auc
+ngpu: 1
+cuda: True
+cudnn: True
+save_avg: True
+test_times_per_epoch: 1
+ddp_timeout_min: 360
+part_mil: {'template_path': './training/config/part_template_32.npy', 'parts': ['eyes_brows', 'nose', 'mouth', 'boundary', 'skin'], 'num_heads': 8, 'tau': 0.5, 'learnable_tau': False, 'mask_eps': 0.02, 'mil_weight': 0.5, 'real_weight': 1.0, 'fuse': 'avg', 'fuse_alpha': 0.5, 'aggregate': 'lse', 'use_mil_loss': True, 'uniform_mask': False, 'freeze_base': True, 'init_from': './checkpoints/ckpt_best.pth'}
+mode: train
+lmdb: False
+dry_run: False
+dataset_root_rgb: /data/hjr/dfbench/rgb
+lmdb_dir: I:\transform_2_lmdb
+dataset_json_folder: /data/hjr/dfbench/dataset_json
+frame_num: {'train': 8, 'test': 32}
+SWA: False
+label_dict: {'DFD_fake': 1, 'DFD_real': 0, 'FF-SH': 1, 'FF-F2F': 1, 'FF-DF': 1, 'FF-FS': 1, 'FF-NT': 1, 'FF-FH': 1, 'FF-real': 0, 'CelebDFv1_real': 0, 'CelebDFv1_fake': 1, 'CelebDFv2_real': 0, 'CelebDFv2_fake': 1, 'DFDCP_Real': 0, 'DFDCP_FakeA': 1, 'DFDCP_FakeB': 1, 'DFDC_Fake': 1, 'DFDC_Real': 0, 'DF_fake': 1, 'DF_real': 0, 'UADFV_Fake': 1, 'UADFV_Real': 0, 'roop_Real': 0, 'roop_Fake': 1, 'FSAll_Fake': 1, 'FSAll_Real': 0, 'FRAll_Fake': 1, 'FRAll_Real': 0, 'EFSAll_Fake': 1, 'EFSAll_Real': 0, 'DF40_train_Fake': 1, 'DF40_train_Real': 0, 'e4s_Fake': 1, 'e4s_Real': 0, 'danet_Fake': 1, 'danet_Real': 0, 'fomm_Fake': 1, 'fomm_Real': 0, 'Collaborative_Diffusion_Fake': 1, 'Collaborative_Diffusion_Real': 0, 'e4e_Fake': 1, 'e4e_Real': 0, 'hyperreenact_Fake': 1, 'hyperreenact_Real': 0, 'MRAA_Fake': 1, 'MRAA_Real': 0, 'one_shot_free_Fake': 1, 'one_shot_free_Real': 0, 'pirender_Fake': 1, 'pirender_Real': 0, 'tpsm_Fake': 1, 'tpsm_Real': 0, 'facedancer_Fake': 1, 'facedancer_Real': 0, 'facevid2vid_Fake': 1, 'facevid2vid_Real': 0, 'mcnet_Fake': 1, 'mcnet_Real': 0, 'mraa_Fake': 1, 'mraa_Real': 0, 'fsgan_Fake': 1, 'fsgan_Real': 0, 'lia_Fake': 1, 'lia_Real': 0, 'inswap_Fake': 1, 'inswap_Real': 0, 'simswap_Fake': 1, 'simswap_Real': 0, 'sadtalker_Fake': 1, 'sadtalker_Real': 0, 'wav2lip_Fake': 1, 'wav2lip_Real': 0, 'uniface_Fake': 1, 'uniface_Real': 0, 'blendface_Fake': 1, 'blendface_Real': 0, 'mobileswap_Fake': 1, 'mobileswap_Real': 0, 'faceswap_Fake': 1, 'faceswap_Real': 0, 'dalle2_face_Fake': 1, 'dalle2_face_Real': 0, 'MidJourney_Fake': 1, 'MidJourney_Real': 0, 'heygen_Fake': 1, 'heygen_Real': 0, 'whichisreal_Fake': 1, 'whichisreal_Real': 0, 'StyleGAN2_Fake': 1, 'StyleGAN2_Real': 0, 'StyleGAN3_Fake': 1, 'StyleGAN3_Real': 0, 'StyleGANXL_Fake': 1, 'StyleGANXL_Real': 0, 'ddim_Fake': 1, 'ddim_Real': 0, 'DiT_Fake': 1, 'DiT_Real': 0, 'pixart_Fake': 1, 'pixart_Real': 0, 'SiT_Fake': 1, 'SiT_Real': 0, 'sd1.5_Fake': 1, 'sd1.5_Real': 0, 'sd2.1_Fake': 1, 'sd2.1_Real': 0, 'VQGAN_Fake': 1, 'VQGAN_Real': 0, 'rddm_Fake': 1, 'rddm_Real': 0, 'stargan_Fake': 1, 'stargan_Real': 0, 'starganv2_Fake': 1, 'starganv2_Real': 0, 'styleclip_Fake': 1, 'styleclip_Real': 0, 'deepfacelab_Fake': 1, 'deepfacelab_Real': 0, 'CollabDiff_Fake': 1, 'CollabDiff_Real': 0, 'adm_Fake': 1, 'adm_Real': 0, 'biggan_Fake': 1, 'biggan_Real': 0, 'glide_Fake': 1, 'glide_Real': 0, 'midjourney_Fake': 1, 'midjourney_Real': 0, 'sdv4_Fake': 1, 'sdv4_Real': 0, 'sdv5_Fake': 1, 'sdv5_Real': 0, 'vqdm_Fake': 1, 'vqdm_Real': 0, 'wukong_Fake': 1, 'wukong_Real': 0, 'Chameleon_Fake': 1, 'Chameleon_Real': 0}
+local_rank: 1
+run_id: pmil_main
+output_group: pmil
+run_dir_is_final: True
+ddp: True
+
+2026-11-05 13:30:42,964 - INFO - Save log to /home/huangjunrong/deepfake/dfd-hr/outputs/pmil/train/pmil_main
+2026-11-05 13:30:42,964 - INFO - --------------- Configuration ---------------
+2026-11-05 13:30:42,965 - INFO - Parameters: 
+log_dir: /home/huangjunrong/deepfake/dfd-hr/outputs/pmil/train/pmil_main
+model_name: dfd_hr_pmil
+backbone_name: ViT-L/14_proj
+backbone_config: {'mode': 'original', 'num_classes': 2, 'inc': 3, 'dropout': False, 'layer': 24, 'remain_layer': 20, 'capacity': 0.75}
+all_dataset: ['FaceForensics++', 'Celeb-DF-v2', 'FaceShifter', 'DeepFakeDetection', 'DFDC', 'DFDCP', 'test_DFR', 'test_WDF', 'test_FFIW', 'uniface_ff', 'blendface_ff', 'mobileswap_ff', 'e4s_ff', 'facedancer_ff', 'fsgan_ff', 'inswap_ff', 'simswap_ff']
+train_dataset: ['FaceForensics++']
+test_dataset: ['Celeb-DF-v2']
+compression: c23
+train_batchSize: 16
+test_batchSize: 32
+workers: 8
+resolution: 448
+with_mask: False
+with_landmark: False
+use_data_augmentation: True
+mean: [0.48145466, 0.4578275, 0.40821073]
+std: [0.26862954, 0.26130258, 0.27577711]
+optimizer: {'type': 'adam', 'adam': {'lr': 0.0001, 'beta1': 0.9, 'beta2': 0.999, 'eps': 1e-08, 'weight_decay': 0.0005, 'amsgrad': False}, 'sgd': {'lr': 0.0002, 'momentum': 0.9, 'weight_decay': 0.0005}}
+lr_scheduler: None
+nEpochs: 3
+start_epoch: 0
+save_epoch: 1
+rec_iter: 100
+logdir: ./logs
+manualSeed: 1024
+save_ckpt: True
+save_feat: False
+loss_func: cross_entropy
+losstype: None
+metric_scoring: auc
+ngpu: 1
+cuda: True
+cudnn: True
+save_avg: True
+test_times_per_epoch: 1
+ddp_timeout_min: 360
+part_mil: {'template_path': './training/config/part_template_32.npy', 'parts': ['eyes_brows', 'nose', 'mouth', 'boundary', 'skin'], 'num_heads': 8, 'tau': 0.5, 'learnable_tau': False, 'mask_eps': 0.02, 'mil_weight': 0.5, 'real_weight': 1.0, 'fuse': 'avg', 'fuse_alpha': 0.5, 'aggregate': 'lse', 'use_mil_loss': True, 'uniform_mask': False, 'freeze_base': True, 'init_from': './checkpoints/ckpt_best.pth'}
+mode: train
+lmdb: False
+dry_run: False
+dataset_root_rgb: /data/hjr/dfbench/rgb
+lmdb_dir: I:\transform_2_lmdb
+dataset_json_folder: /data/hjr/dfbench/dataset_json
+frame_num: {'train': 8, 'test': 32}
+SWA: False
+label_dict: {'DFD_fake': 1, 'DFD_real': 0, 'FF-SH': 1, 'FF-F2F': 1, 'FF-DF': 1, 'FF-FS': 1, 'FF-NT': 1, 'FF-FH': 1, 'FF-real': 0, 'CelebDFv1_real': 0, 'CelebDFv1_fake': 1, 'CelebDFv2_real': 0, 'CelebDFv2_fake': 1, 'DFDCP_Real': 0, 'DFDCP_FakeA': 1, 'DFDCP_FakeB': 1, 'DFDC_Fake': 1, 'DFDC_Real': 0, 'DF_fake': 1, 'DF_real': 0, 'UADFV_Fake': 1, 'UADFV_Real': 0, 'roop_Real': 0, 'roop_Fake': 1, 'FSAll_Fake': 1, 'FSAll_Real': 0, 'FRAll_Fake': 1, 'FRAll_Real': 0, 'EFSAll_Fake': 1, 'EFSAll_Real': 0, 'DF40_train_Fake': 1, 'DF40_train_Real': 0, 'e4s_Fake': 1, 'e4s_Real': 0, 'danet_Fake': 1, 'danet_Real': 0, 'fomm_Fake': 1, 'fomm_Real': 0, 'Collaborative_Diffusion_Fake': 1, 'Collaborative_Diffusion_Real': 0, 'e4e_Fake': 1, 'e4e_Real': 0, 'hyperreenact_Fake': 1, 'hyperreenact_Real': 0, 'MRAA_Fake': 1, 'MRAA_Real': 0, 'one_shot_free_Fake': 1, 'one_shot_free_Real': 0, 'pirender_Fake': 1, 'pirender_Real': 0, 'tpsm_Fake': 1, 'tpsm_Real': 0, 'facedancer_Fake': 1, 'facedancer_Real': 0, 'facevid2vid_Fake': 1, 'facevid2vid_Real': 0, 'mcnet_Fake': 1, 'mcnet_Real': 0, 'mraa_Fake': 1, 'mraa_Real': 0, 'fsgan_Fake': 1, 'fsgan_Real': 0, 'lia_Fake': 1, 'lia_Real': 0, 'inswap_Fake': 1, 'inswap_Real': 0, 'simswap_Fake': 1, 'simswap_Real': 0, 'sadtalker_Fake': 1, 'sadtalker_Real': 0, 'wav2lip_Fake': 1, 'wav2lip_Real': 0, 'uniface_Fake': 1, 'uniface_Real': 0, 'blendface_Fake': 1, 'blendface_Real': 0, 'mobileswap_Fake': 1, 'mobileswap_Real': 0, 'faceswap_Fake': 1, 'faceswap_Real': 0, 'dalle2_face_Fake': 1, 'dalle2_face_Real': 0, 'MidJourney_Fake': 1, 'MidJourney_Real': 0, 'heygen_Fake': 1, 'heygen_Real': 0, 'whichisreal_Fake': 1, 'whichisreal_Real': 0, 'StyleGAN2_Fake': 1, 'StyleGAN2_Real': 0, 'StyleGAN3_Fake': 1, 'StyleGAN3_Real': 0, 'StyleGANXL_Fake': 1, 'StyleGANXL_Real': 0, 'ddim_Fake': 1, 'ddim_Real': 0, 'DiT_Fake': 1, 'DiT_Real': 0, 'pixart_Fake': 1, 'pixart_Real': 0, 'SiT_Fake': 1, 'SiT_Real': 0, 'sd1.5_Fake': 1, 'sd1.5_Real': 0, 'sd2.1_Fake': 1, 'sd2.1_Real': 0, 'VQGAN_Fake': 1, 'VQGAN_Real': 0, 'rddm_Fake': 1, 'rddm_Real': 0, 'stargan_Fake': 1, 'stargan_Real': 0, 'starganv2_Fake': 1, 'starganv2_Real': 0, 'styleclip_Fake': 1, 'styleclip_Real': 0, 'deepfacelab_Fake': 1, 'deepfacelab_Real': 0, 'CollabDiff_Fake': 1, 'CollabDiff_Real': 0, 'adm_Fake': 1, 'adm_Real': 0, 'biggan_Fake': 1, 'biggan_Real': 0, 'glide_Fake': 1, 'glide_Real': 0, 'midjourney_Fake': 1, 'midjourney_Real': 0, 'sdv4_Fake': 1, 'sdv4_Real': 0, 'sdv5_Fake': 1, 'sdv5_Real': 0, 'vqdm_Fake': 1, 'vqdm_Real': 0, 'wukong_Fake': 1, 'wukong_Real': 0, 'Chameleon_Fake': 1, 'Chameleon_Real': 0}
+local_rank: 0
+run_id: pmil_main
+output_group: pmil
+run_dir_is_final: True
+ddp: True
+
+2026-11-05 13:30:43,072 - INFO - Save log to /home/huangjunrong/deepfake/dfd-hr/outputs/pmil/train/pmil_main
+2026-11-05 13:30:43,073 - INFO - --------------- Configuration ---------------
+2026-11-05 13:30:43,073 - INFO - Parameters: 
+log_dir: /home/huangjunrong/deepfake/dfd-hr/outputs/pmil/train/pmil_main
+model_name: dfd_hr_pmil
+backbone_name: ViT-L/14_proj
+backbone_config: {'mode': 'original', 'num_classes': 2, 'inc': 3, 'dropout': False, 'layer': 24, 'remain_layer': 20, 'capacity': 0.75}
+all_dataset: ['FaceForensics++', 'Celeb-DF-v2', 'FaceShifter', 'DeepFakeDetection', 'DFDC', 'DFDCP', 'test_DFR', 'test_WDF', 'test_FFIW', 'uniface_ff', 'blendface_ff', 'mobileswap_ff', 'e4s_ff', 'facedancer_ff', 'fsgan_ff', 'inswap_ff', 'simswap_ff']
+train_dataset: ['FaceForensics++']
+test_dataset: ['Celeb-DF-v2']
+compression: c23
+train_batchSize: 16
+test_batchSize: 32
+workers: 8
+resolution: 448
+with_mask: False
+with_landmark: False
+use_data_augmentation: True
+mean: [0.48145466, 0.4578275, 0.40821073]
+std: [0.26862954, 0.26130258, 0.27577711]
+optimizer: {'type': 'adam', 'adam': {'lr': 0.0001, 'beta1': 0.9, 'beta2': 0.999, 'eps': 1e-08, 'weight_decay': 0.0005, 'amsgrad': False}, 'sgd': {'lr': 0.0002, 'momentum': 0.9, 'weight_decay': 0.0005}}
+lr_scheduler: None
+nEpochs: 3
+start_epoch: 0
+save_epoch: 1
+rec_iter: 100
+logdir: ./logs
+manualSeed: 1024
+save_ckpt: True
+save_feat: False
+loss_func: cross_entropy
+losstype: None
+metric_scoring: auc
+ngpu: 1
+cuda: True
+cudnn: True
+save_avg: True
+test_times_per_epoch: 1
+ddp_timeout_min: 360
+part_mil: {'template_path': './training/config/part_template_32.npy', 'parts': ['eyes_brows', 'nose', 'mouth', 'boundary', 'skin'], 'num_heads': 8, 'tau': 0.5, 'learnable_tau': False, 'mask_eps': 0.02, 'mil_weight': 0.5, 'real_weight': 1.0, 'fuse': 'avg', 'fuse_alpha': 0.5, 'aggregate': 'lse', 'use_mil_loss': True, 'uniform_mask': False, 'freeze_base': True, 'init_from': './checkpoints/ckpt_best.pth'}
+mode: train
+lmdb: False
+dry_run: False
+dataset_root_rgb: /data/hjr/dfbench/rgb
+lmdb_dir: I:\transform_2_lmdb
+dataset_json_folder: /data/hjr/dfbench/dataset_json
+frame_num: {'train': 8, 'test': 32}
+SWA: False
+label_dict: {'DFD_fake': 1, 'DFD_real': 0, 'FF-SH': 1, 'FF-F2F': 1, 'FF-DF': 1, 'FF-FS': 1, 'FF-NT': 1, 'FF-FH': 1, 'FF-real': 0, 'CelebDFv1_real': 0, 'CelebDFv1_fake': 1, 'CelebDFv2_real': 0, 'CelebDFv2_fake': 1, 'DFDCP_Real': 0, 'DFDCP_FakeA': 1, 'DFDCP_FakeB': 1, 'DFDC_Fake': 1, 'DFDC_Real': 0, 'DF_fake': 1, 'DF_real': 0, 'UADFV_Fake': 1, 'UADFV_Real': 0, 'roop_Real': 0, 'roop_Fake': 1, 'FSAll_Fake': 1, 'FSAll_Real': 0, 'FRAll_Fake': 1, 'FRAll_Real': 0, 'EFSAll_Fake': 1, 'EFSAll_Real': 0, 'DF40_train_Fake': 1, 'DF40_train_Real': 0, 'e4s_Fake': 1, 'e4s_Real': 0, 'danet_Fake': 1, 'danet_Real': 0, 'fomm_Fake': 1, 'fomm_Real': 0, 'Collaborative_Diffusion_Fake': 1, 'Collaborative_Diffusion_Real': 0, 'e4e_Fake': 1, 'e4e_Real': 0, 'hyperreenact_Fake': 1, 'hyperreenact_Real': 0, 'MRAA_Fake': 1, 'MRAA_Real': 0, 'one_shot_free_Fake': 1, 'one_shot_free_Real': 0, 'pirender_Fake': 1, 'pirender_Real': 0, 'tpsm_Fake': 1, 'tpsm_Real': 0, 'facedancer_Fake': 1, 'facedancer_Real': 0, 'facevid2vid_Fake': 1, 'facevid2vid_Real': 0, 'mcnet_Fake': 1, 'mcnet_Real': 0, 'mraa_Fake': 1, 'mraa_Real': 0, 'fsgan_Fake': 1, 'fsgan_Real': 0, 'lia_Fake': 1, 'lia_Real': 0, 'inswap_Fake': 1, 'inswap_Real': 0, 'simswap_Fake': 1, 'simswap_Real': 0, 'sadtalker_Fake': 1, 'sadtalker_Real': 0, 'wav2lip_Fake': 1, 'wav2lip_Real': 0, 'uniface_Fake': 1, 'uniface_Real': 0, 'blendface_Fake': 1, 'blendface_Real': 0, 'mobileswap_Fake': 1, 'mobileswap_Real': 0, 'faceswap_Fake': 1, 'faceswap_Real': 0, 'dalle2_face_Fake': 1, 'dalle2_face_Real': 0, 'MidJourney_Fake': 1, 'MidJourney_Real': 0, 'heygen_Fake': 1, 'heygen_Real': 0, 'whichisreal_Fake': 1, 'whichisreal_Real': 0, 'StyleGAN2_Fake': 1, 'StyleGAN2_Real': 0, 'StyleGAN3_Fake': 1, 'StyleGAN3_Real': 0, 'StyleGANXL_Fake': 1, 'StyleGANXL_Real': 0, 'ddim_Fake': 1, 'ddim_Real': 0, 'DiT_Fake': 1, 'DiT_Real': 0, 'pixart_Fake': 1, 'pixart_Real': 0, 'SiT_Fake': 1, 'SiT_Real': 0, 'sd1.5_Fake': 1, 'sd1.5_Real': 0, 'sd2.1_Fake': 1, 'sd2.1_Real': 0, 'VQGAN_Fake': 1, 'VQGAN_Real': 0, 'rddm_Fake': 1, 'rddm_Real': 0, 'stargan_Fake': 1, 'stargan_Real': 0, 'starganv2_Fake': 1, 'starganv2_Real': 0, 'styleclip_Fake': 1, 'styleclip_Real': 0, 'deepfacelab_Fake': 1, 'deepfacelab_Real': 0, 'CollabDiff_Fake': 1, 'CollabDiff_Real': 0, 'adm_Fake': 1, 'adm_Real': 0, 'biggan_Fake': 1, 'biggan_Real': 0, 'glide_Fake': 1, 'glide_Real': 0, 'midjourney_Fake': 1, 'midjourney_Real': 0, 'sdv4_Fake': 1, 'sdv4_Real': 0, 'sdv5_Fake': 1, 'sdv5_Real': 0, 'vqdm_Fake': 1, 'vqdm_Real': 0, 'wukong_Fake': 1, 'wukong_Real': 0, 'Chameleon_Fake': 1, 'Chameleon_Real': 0}
+local_rank: 3
+run_id: pmil_main
+output_group: pmil
+run_dir_is_final: True
+ddp: True
+
+2026-11-05 13:30:43,119 - INFO - Save log to /home/huangjunrong/deepfake/dfd-hr/outputs/pmil/train/pmil_main
+2026-11-05 13:30:43,119 - INFO - --------------- Configuration ---------------
+2026-11-05 13:30:43,119 - INFO - Parameters: 
+log_dir: /home/huangjunrong/deepfake/dfd-hr/outputs/pmil/train/pmil_main
+model_name: dfd_hr_pmil
+backbone_name: ViT-L/14_proj
+backbone_config: {'mode': 'original', 'num_classes': 2, 'inc': 3, 'dropout': False, 'layer': 24, 'remain_layer': 20, 'capacity': 0.75}
+all_dataset: ['FaceForensics++', 'Celeb-DF-v2', 'FaceShifter', 'DeepFakeDetection', 'DFDC', 'DFDCP', 'test_DFR', 'test_WDF', 'test_FFIW', 'uniface_ff', 'blendface_ff', 'mobileswap_ff', 'e4s_ff', 'facedancer_ff', 'fsgan_ff', 'inswap_ff', 'simswap_ff']
+train_dataset: ['FaceForensics++']
+test_dataset: ['Celeb-DF-v2']
+compression: c23
+train_batchSize: 16
+test_batchSize: 32
+workers: 8
+resolution: 448
+with_mask: False
+with_landmark: False
+use_data_augmentation: True
+mean: [0.48145466, 0.4578275, 0.40821073]
+std: [0.26862954, 0.26130258, 0.27577711]
+optimizer: {'type': 'adam', 'adam': {'lr': 0.0001, 'beta1': 0.9, 'beta2': 0.999, 'eps': 1e-08, 'weight_decay': 0.0005, 'amsgrad': False}, 'sgd': {'lr': 0.0002, 'momentum': 0.9, 'weight_decay': 0.0005}}
+lr_scheduler: None
+nEpochs: 3
+start_epoch: 0
+save_epoch: 1
+rec_iter: 100
+logdir: ./logs
+manualSeed: 1024
+save_ckpt: True
+save_feat: False
+loss_func: cross_entropy
+losstype: None
+metric_scoring: auc
+ngpu: 1
+cuda: True
+cudnn: True
+save_avg: True
+test_times_per_epoch: 1
+ddp_timeout_min: 360
+part_mil: {'template_path': './training/config/part_template_32.npy', 'parts': ['eyes_brows', 'nose', 'mouth', 'boundary', 'skin'], 'num_heads': 8, 'tau': 0.5, 'learnable_tau': False, 'mask_eps': 0.02, 'mil_weight': 0.5, 'real_weight': 1.0, 'fuse': 'avg', 'fuse_alpha': 0.5, 'aggregate': 'lse', 'use_mil_loss': True, 'uniform_mask': False, 'freeze_base': True, 'init_from': './checkpoints/ckpt_best.pth'}
+mode: train
+lmdb: False
+dry_run: False
+dataset_root_rgb: /data/hjr/dfbench/rgb
+lmdb_dir: I:\transform_2_lmdb
+dataset_json_folder: /data/hjr/dfbench/dataset_json
+frame_num: {'train': 8, 'test': 32}
+SWA: False
+label_dict: {'DFD_fake': 1, 'DFD_real': 0, 'FF-SH': 1, 'FF-F2F': 1, 'FF-DF': 1, 'FF-FS': 1, 'FF-NT': 1, 'FF-FH': 1, 'FF-real': 0, 'CelebDFv1_real': 0, 'CelebDFv1_fake': 1, 'CelebDFv2_real': 0, 'CelebDFv2_fake': 1, 'DFDCP_Real': 0, 'DFDCP_FakeA': 1, 'DFDCP_FakeB': 1, 'DFDC_Fake': 1, 'DFDC_Real': 0, 'DF_fake': 1, 'DF_real': 0, 'UADFV_Fake': 1, 'UADFV_Real': 0, 'roop_Real': 0, 'roop_Fake': 1, 'FSAll_Fake': 1, 'FSAll_Real': 0, 'FRAll_Fake': 1, 'FRAll_Real': 0, 'EFSAll_Fake': 1, 'EFSAll_Real': 0, 'DF40_train_Fake': 1, 'DF40_train_Real': 0, 'e4s_Fake': 1, 'e4s_Real': 0, 'danet_Fake': 1, 'danet_Real': 0, 'fomm_Fake': 1, 'fomm_Real': 0, 'Collaborative_Diffusion_Fake': 1, 'Collaborative_Diffusion_Real': 0, 'e4e_Fake': 1, 'e4e_Real': 0, 'hyperreenact_Fake': 1, 'hyperreenact_Real': 0, 'MRAA_Fake': 1, 'MRAA_Real': 0, 'one_shot_free_Fake': 1, 'one_shot_free_Real': 0, 'pirender_Fake': 1, 'pirender_Real': 0, 'tpsm_Fake': 1, 'tpsm_Real': 0, 'facedancer_Fake': 1, 'facedancer_Real': 0, 'facevid2vid_Fake': 1, 'facevid2vid_Real': 0, 'mcnet_Fake': 1, 'mcnet_Real': 0, 'mraa_Fake': 1, 'mraa_Real': 0, 'fsgan_Fake': 1, 'fsgan_Real': 0, 'lia_Fake': 1, 'lia_Real': 0, 'inswap_Fake': 1, 'inswap_Real': 0, 'simswap_Fake': 1, 'simswap_Real': 0, 'sadtalker_Fake': 1, 'sadtalker_Real': 0, 'wav2lip_Fake': 1, 'wav2lip_Real': 0, 'uniface_Fake': 1, 'uniface_Real': 0, 'blendface_Fake': 1, 'blendface_Real': 0, 'mobileswap_Fake': 1, 'mobileswap_Real': 0, 'faceswap_Fake': 1, 'faceswap_Real': 0, 'dalle2_face_Fake': 1, 'dalle2_face_Real': 0, 'MidJourney_Fake': 1, 'MidJourney_Real': 0, 'heygen_Fake': 1, 'heygen_Real': 0, 'whichisreal_Fake': 1, 'whichisreal_Real': 0, 'StyleGAN2_Fake': 1, 'StyleGAN2_Real': 0, 'StyleGAN3_Fake': 1, 'StyleGAN3_Real': 0, 'StyleGANXL_Fake': 1, 'StyleGANXL_Real': 0, 'ddim_Fake': 1, 'ddim_Real': 0, 'DiT_Fake': 1, 'DiT_Real': 0, 'pixart_Fake': 1, 'pixart_Real': 0, 'SiT_Fake': 1, 'SiT_Real': 0, 'sd1.5_Fake': 1, 'sd1.5_Real': 0, 'sd2.1_Fake': 1, 'sd2.1_Real': 0, 'VQGAN_Fake': 1, 'VQGAN_Real': 0, 'rddm_Fake': 1, 'rddm_Real': 0, 'stargan_Fake': 1, 'stargan_Real': 0, 'starganv2_Fake': 1, 'starganv2_Real': 0, 'styleclip_Fake': 1, 'styleclip_Real': 0, 'deepfacelab_Fake': 1, 'deepfacelab_Real': 0, 'CollabDiff_Fake': 1, 'CollabDiff_Real': 0, 'adm_Fake': 1, 'adm_Real': 0, 'biggan_Fake': 1, 'biggan_Real': 0, 'glide_Fake': 1, 'glide_Real': 0, 'midjourney_Fake': 1, 'midjourney_Real': 0, 'sdv4_Fake': 1, 'sdv4_Real': 0, 'sdv5_Fake': 1, 'sdv5_Real': 0, 'vqdm_Fake': 1, 'vqdm_Real': 0, 'wukong_Fake': 1, 'wukong_Real': 0, 'Chameleon_Fake': 1, 'Chameleon_Real': 0}
+local_rank: 2
+run_id: pmil_main
+output_group: pmil
+run_dir_is_final: True
+ddp: True
+
+2026-11-05 13:30:55,272 - INFO - [PMIL] parts=['eyes_brows', 'nose', 'mouth', 'boundary', 'skin'] grid=32 freeze_base=True init_from=./checkpoints/ckpt_best.pth trainable_params=2371589
+2026-11-05 13:30:55,298 - INFO - [PMIL] parts=['eyes_brows', 'nose', 'mouth', 'boundary', 'skin'] grid=32 freeze_base=True init_from=./checkpoints/ckpt_best.pth trainable_params=2371589
+2026-11-05 13:30:55,343 - INFO - [PMIL] parts=['eyes_brows', 'nose', 'mouth', 'boundary', 'skin'] grid=32 freeze_base=True init_from=./checkpoints/ckpt_best.pth trainable_params=2371589
+2026-11-05 13:30:55,605 - INFO - [PMIL] parts=['eyes_brows', 'nose', 'mouth', 'boundary', 'skin'] grid=32 freeze_base=True init_from=./checkpoints/ckpt_best.pth trainable_params=2371589
+2026-11-05 13:30:56,686 - INFO - ===> Epoch[0] start!
+2026-11-05 13:30:56,741 - INFO - data_dict saved to /home/huangjunrong/deepfake/dfd-hr/outputs/pmil/train/pmil_main/train/FaceForensics++/data_dict_train.pickle
+2026-11-05 13:31:02,431 - INFO - Iter: 0    training-loss, overall: 1.4430875778198242    training-loss, cls: 0.479992151260376    training-loss, part: 1.4430875778198242    
+2026-11-05 13:31:02,436 - INFO - Iter: 0    training-metric, acc: 0.6875    training-metric, auc: 0.9333333333333333    training-metric, eer: 0.0    training-metric, ap: 0.9714285714285714    
+2026-11-05 13:42:36,033 - INFO - Iter: 300    training-loss, overall: 0.6442410349845886    training-loss, cls: 0.20607119798660278    training-loss, part: 0.6442410349845886    
+2026-11-05 13:42:36,034 - INFO - Iter: 300    training-metric, acc: 0.9008333333333334    training-metric, auc: 0.9541659109313748    training-metric, eer: 0.0715022091310751    training-metric, ap: 0.9884492926613213    
+2026-11-05 13:48:18,473 - INFO - ===> Test start!
+2026-11-05 13:48:18,489 - INFO - data_dict saved to /home/huangjunrong/deepfake/dfd-hr/outputs/pmil/train/pmil_main/test/Celeb-DF-v2/data_dict_test.pickle
+2026-11-05 14:19:37,006 - INFO - Checkpoint saved to /home/huangjunrong/deepfake/dfd-hr/outputs/pmil/train/pmil_main/test/Celeb-DF-v2/ckpt_best.pth, current ckpt is 0+449
+2026-11-05 14:19:37,006 - INFO - Metrics saved to /home/huangjunrong/deepfake/dfd-hr/outputs/pmil/train/pmil_main/test/Celeb-DF-v2/metric_dict_best.pickle
+2026-11-05 14:19:37,011 - INFO - dataset: Celeb-DF-v2    step: 449    testing-loss, overall: 0.7904582619667053    testing-loss, cls: 0.4123455882072449    testing-loss, part: 0.7904582619667053    
+2026-11-05 14:19:37,019 - INFO - dataset: Celeb-DF-v2    step: 449    testing-metric, acc: 0.8013398294762485    testing-metric, auc: 0.8693529227626202    testing-metric, eer: 0.2117437722419929    testing-metric, ap: 0.9200928903054907    testing-metric, video_auc: 0.9474719101123596    testing-metric, video_eer: 0.12359550561797752    testing-metric, video_acc: 0.8938223938223938    testing-metric, acc_real:0.8078291814946619; acc_fake:0.797962962962963
+2026-11-05 14:19:38,620 - INFO - Checkpoint saved to /home/huangjunrong/deepfake/dfd-hr/outputs/pmil/train/pmil_main/test/avg/ckpt_best.pth, current ckpt is 0+449
+2026-11-05 14:19:38,621 - INFO - Metrics saved to /home/huangjunrong/deepfake/dfd-hr/outputs/pmil/train/pmil_main/test/avg/metric_dict_best.pickle
+2026-11-05 14:19:38,627 - INFO - dataset: avg    step: 449    testing-metric, acc: 0.8013398294762485    testing-metric, auc: 0.8693529227626202    testing-metric, eer: 0.2117437722419929    testing-metric, ap: 0.9200928903054907    testing-metric, video_auc: 0.9474719101123596    
+2026-11-05 14:19:38,627 - INFO - ===> Test Done!
+2026-11-05 14:19:38,872 - INFO - ===> Epoch[0] end with testing auc: 
+================================ Each dataset best metric ================================ 
+| Celeb-DF-v2:  auc=0.8693529227626202 | 
+============================================================================================= 
+================================== Average best metric ====================================== 
+| avg auc: 0.8693529227626202 | 
+| Celeb-DF-v2: 0.8693529227626202 | 
+=============================================================================================!
+2026-11-05 14:19:38,872 - INFO - ===> Epoch[1] start!
+2026-11-05 14:19:38,907 - INFO - data_dict saved to /home/huangjunrong/deepfake/dfd-hr/outputs/pmil/train/pmil_main/train/FaceForensics++/data_dict_train.pickle
+2026-11-05 14:19:43,052 - INFO - Iter: 450    training-loss, overall: 0.755895733833313    training-loss, cls: 0.38047075271606445    training-loss, part: 0.755895733833313    
+2026-11-05 14:19:43,053 - INFO - Iter: 450    training-metric, acc: 0.75    training-metric, auc: 0.9166666666666666    training-metric, eer: 0.0    training-metric, ap: 0.9666666666666667    
+2026-11-05 14:31:15,516 - INFO - Iter: 750    training-loss, overall: 0.5266785621643066    training-loss, cls: 0.2059723138809204    training-loss, part: 0.5266785621643066    
+2026-11-05 14:31:15,517 - INFO - Iter: 750    training-metric, acc: 0.903125    training-metric, auc: 0.954505057275676    training-metric, eer: 0.0639543446244477    training-metric, ap: 0.989216291013231    
+2026-11-05 14:36:56,478 - INFO - ===> Test start!
+2026-11-05 14:36:56,493 - INFO - data_dict saved to /home/huangjunrong/deepfake/dfd-hr/outputs/pmil/train/pmil_main/test/Celeb-DF-v2/data_dict_test.pickle
+2026-11-05 15:08:16,250 - INFO - dataset: Celeb-DF-v2    step: 899    testing-loss, overall: 0.7675530314445496    testing-loss, cls: 0.4123455882072449    testing-loss, part: 0.7675530314445496    
+2026-11-05 15:08:16,252 - INFO - dataset: Celeb-DF-v2    step: 899    testing-metric, acc: 0.8092570036540804    testing-metric, auc: 0.8691649614472123    testing-metric, eer: 0.21156583629893239    testing-metric, ap: 0.9199136962415875    testing-metric, video_auc: 0.9461830799735625    testing-metric, video_eer: 0.1404494382022472    testing-metric, video_acc: 0.8841698841698842    testing-metric, acc_real:0.8165480427046263; acc_fake:0.8054629629629629
+2026-11-05 15:08:16,253 - INFO - dataset: avg    step: 899    testing-metric, acc: 0.8092570036540804    testing-metric, auc: 0.8691649614472123    testing-metric, eer: 0.21156583629893239    testing-metric, ap: 0.9199136962415875    testing-metric, video_auc: 0.9461830799735625    
+2026-11-05 15:08:16,253 - INFO - ===> Test Done!
+2026-11-05 15:08:16,440 - INFO - ===> Epoch[1] end with testing auc: 
+================================ Each dataset best metric ================================ 
+| Celeb-DF-v2:  auc=0.8693529227626202 | 
+============================================================================================= 
+================================== Average best metric ====================================== 
+| avg auc: 0.8693529227626202 | 
+| Celeb-DF-v2: 0.8693529227626202 | 
+=============================================================================================!
+2026-11-05 15:08:16,440 - INFO - ===> Epoch[2] start!
+2026-11-05 15:08:16,477 - INFO - data_dict saved to /home/huangjunrong/deepfake/dfd-hr/outputs/pmil/train/pmil_main/train/FaceForensics++/data_dict_train.pickle
+2026-11-05 15:08:20,468 - INFO - Iter: 900    training-loss, overall: 0.7182813286781311    training-loss, cls: 0.35314103960990906    training-loss, part: 0.7182813286781311    
+2026-11-05 15:08:20,469 - INFO - Iter: 900    training-metric, acc: 0.75    training-metric, auc: 0.9166666666666667    training-metric, eer: 0.16666666666666666    training-metric, ap: 0.9558119658119659    
+2026-11-05 15:19:55,443 - INFO - Iter: 1200    training-loss, overall: 0.5133526921272278    training-loss, cls: 0.20743729174137115    training-loss, part: 0.5133526921272278    
+2026-11-05 15:19:55,444 - INFO - Iter: 1200    training-metric, acc: 0.90875    training-metric, auc: 0.9547428015855851    training-metric, eer: 0.06314842088037963    training-metric, ap: 0.9885012901545633    
+2026-11-05 15:25:44,682 - INFO - ===> Test start!
+2026-11-05 15:25:44,698 - INFO - data_dict saved to /home/huangjunrong/deepfake/dfd-hr/outputs/pmil/train/pmil_main/test/Celeb-DF-v2/data_dict_test.pickle
+2026-11-05 15:57:17,013 - INFO - Checkpoint saved to /home/huangjunrong/deepfake/dfd-hr/outputs/pmil/train/pmil_main/test/Celeb-DF-v2/ckpt_best.pth, current ckpt is 2+449
+2026-11-05 15:57:17,015 - INFO - Metrics saved to /home/huangjunrong/deepfake/dfd-hr/outputs/pmil/train/pmil_main/test/Celeb-DF-v2/metric_dict_best.pickle
+2026-11-05 15:57:17,021 - INFO - dataset: Celeb-DF-v2    step: 1349    testing-loss, overall: 0.7608252167701721    testing-loss, cls: 0.4123455882072449    testing-loss, part: 0.7608252167701721    
+2026-11-05 15:57:17,026 - INFO - dataset: Celeb-DF-v2    step: 1349    testing-metric, acc: 0.8072472594397077    testing-metric, auc: 0.870090928562014    testing-metric, eer: 0.2110320284697509    testing-metric, ap: 0.9215761037847483    testing-metric, video_auc: 0.9465465961665566    testing-metric, video_eer: 0.1348314606741573    testing-metric, video_acc: 0.8938223938223938    testing-metric, acc_real:0.8131672597864769; acc_fake:0.8041666666666667
+2026-11-05 15:57:27,310 - INFO - Checkpoint saved to /home/huangjunrong/deepfake/dfd-hr/outputs/pmil/train/pmil_main/test/avg/ckpt_best.pth, current ckpt is 2+449
+2026-11-05 15:57:27,312 - INFO - Metrics saved to /home/huangjunrong/deepfake/dfd-hr/outputs/pmil/train/pmil_main/test/avg/metric_dict_best.pickle
+2026-11-05 15:57:27,314 - INFO - dataset: avg    step: 1349    testing-metric, acc: 0.8072472594397077    testing-metric, auc: 0.870090928562014    testing-metric, eer: 0.2110320284697509    testing-metric, ap: 0.9215761037847483    testing-metric, video_auc: 0.9465465961665566    
+2026-11-05 15:57:27,315 - INFO - ===> Test Done!
+2026-11-05 15:57:27,467 - INFO - ===> Epoch[2] end with testing auc: 
+================================ Each dataset best metric ================================ 
+| Celeb-DF-v2:  auc=0.870090928562014 | 
+============================================================================================= 
+================================== Average best metric ====================================== 
+| avg auc: 0.870090928562014 | 
+| Celeb-DF-v2: 0.870090928562014 | 
+=============================================================================================!
+2026-11-05 15:57:27,467 - INFO - ===> Epoch[3] start!
+2026-11-05 15:57:27,507 - INFO - data_dict saved to /home/huangjunrong/deepfake/dfd-hr/outputs/pmil/train/pmil_main/train/FaceForensics++/data_dict_train.pickle
+2026-11-05 15:57:31,482 - INFO - Iter: 1350    training-loss, overall: 0.7671358585357666    training-loss, cls: 0.3301350474357605    training-loss, part: 0.7671358585357666    
+2026-11-05 15:57:31,483 - INFO - Iter: 1350    training-metric, acc: 0.875    training-metric, auc: 0.9166666666666667    training-metric, eer: 0.16666666666666666    training-metric, ap: 0.9430122655122655    
+2026-11-05 16:09:01,885 - INFO - Iter: 1650    training-loss, overall: 0.5022268891334534    training-loss, cls: 0.21359670162200928    training-loss, part: 0.5022268891334534    
+2026-11-05 16:09:01,886 - INFO - Iter: 1650    training-metric, acc: 0.905    training-metric, auc: 0.9548636167192868    training-metric, eer: 0.05547373588610702    training-metric, ap: 0.9886899068339771    
+2026-11-05 16:14:42,861 - INFO - ===> Test start!
+2026-11-05 16:14:42,875 - INFO - data_dict saved to /home/huangjunrong/deepfake/dfd-hr/outputs/pmil/train/pmil_main/test/Celeb-DF-v2/data_dict_test.pickle
+2026-11-05 16:45:51,336 - INFO - dataset: Celeb-DF-v2    step: 1799    testing-loss, overall: 0.7971741557121277    testing-loss, cls: 0.4123455882072449    testing-loss, part: 0.7971741557121277    
+2026-11-05 16:45:51,338 - INFO - dataset: Celeb-DF-v2    step: 1799    testing-metric, acc: 0.7979902557856273    testing-metric, auc: 0.8635775833662843    testing-metric, eer: 0.21512455516014234    testing-metric, ap: 0.9171652022386796    testing-metric, video_auc: 0.9420852610707204    testing-metric, video_eer: 0.12921348314606743    testing-metric, video_acc: 0.8841698841698842    testing-metric, acc_real:0.8062277580071174; acc_fake:0.7937037037037037
+2026-11-05 16:45:51,340 - INFO - dataset: avg    step: 1799    testing-metric, acc: 0.7979902557856273    testing-metric, auc: 0.8635775833662843    testing-metric, eer: 0.21512455516014234    testing-metric, ap: 0.9171652022386796    testing-metric, video_auc: 0.9420852610707204    
+2026-11-05 16:45:51,340 - INFO - ===> Test Done!
+2026-11-05 16:45:51,523 - INFO - ===> Epoch[3] end with testing auc: 
+================================ Each dataset best metric ================================ 
+| Celeb-DF-v2:  auc=0.870090928562014 | 
+============================================================================================= 
+================================== Average best metric ====================================== 
+| avg auc: 0.870090928562014 | 
+| Celeb-DF-v2: 0.870090928562014 | 
+=============================================================================================!
+2026-11-05 16:45:51,524 - INFO - Stop Training on best Testing metric 
+================================ Each dataset best metric ================================ 
+| Celeb-DF-v2:  auc=0.870090928562014 | 
+============================================================================================= 
+================================== Average best metric ====================================== 
+| avg auc: 0.870090928562014 | 
+| Celeb-DF-v2: 0.870090928562014 | 
+=============================================================================================
