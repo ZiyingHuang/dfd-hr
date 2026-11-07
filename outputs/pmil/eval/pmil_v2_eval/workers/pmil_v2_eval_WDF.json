@@ -1,0 +1,23 @@
+{
+  "batch_size": 32,
+  "checkpoint": "/home/huangjunrong/deepfake/dfd-hr/outputs/pmil/train/pmil_v2/test/avg/ckpt_best.pth",
+  "dataset": "WDF",
+  "dataset_root": "/data/hjr/deepfake/testset",
+  "frame_num": 32,
+  "metrics": {
+    "acc": 0.7718025058925692,
+    "ap": 0.8737448655045117,
+    "auc": 0.8606424523213112,
+    "eer": 0.22272727272727272,
+    "fake_videos": 410,
+    "num_frames": 16122,
+    "num_videos": 806,
+    "real_videos": 396,
+    "video_acc": 0.8076923076923077,
+    "video_auc": 0.8985895540773589,
+    "video_eer": 0.1717171717171717
+  },
+  "run_id": "pmil_v2_eval",
+  "source": "deepfake",
+  "source_type": "folder"
+}
