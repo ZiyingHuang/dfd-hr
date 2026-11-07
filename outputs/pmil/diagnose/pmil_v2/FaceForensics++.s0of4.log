@@ -1,0 +1,7 @@
+/root/my_env/lib/python3.10/site-packages/transformers/tokenization_utils_base.py:1601: FutureWarning: `clean_up_tokenization_spaces` was not set. It will be set to `True` by default. This behavior will be depracted in transformers v4.45, and will be then set to `False` by default. For more details check this issue: https://github.com/huggingface/transformers/issues/31884
+  warnings.warn(
+/root/my_env/lib/python3.10/site-packages/albumentations/augmentations/transforms.py:688: FutureWarning: This class has been deprecated. Please use CoarseDropout
+  warnings.warn(
+[PMIL] parts=['eyes_brows', 'nose', 'mouth', 'boundary', 'skin'] grid=32 freeze_base=False supervision=mask base_lr_scale=0.1 trainable_params=38972743
+[FaceForensics++] 96 frames
+saved outputs/pmil/diagnose/pmil_v2/FaceForensics++.s0of4.npz
