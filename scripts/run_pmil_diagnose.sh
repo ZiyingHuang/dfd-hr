@@ -4,7 +4,8 @@
 #   CHECKPOINT=outputs/pmil/train/pmil_v2/test/avg/ckpt_best.pth \
 #   DETECTOR=training/config/detector/dfd_hr_pmil_v2.yaml bash scripts/run_pmil_diagnose.sh
 # Env: GPUS (default 0,1,2,3), BATCH (frames per forward, default 64; each frame = 5 ViT-L crops),
-#      WORKERS (data-loading processes per GPU, default 8), RUN_ID
+#      WORKERS (data-loading processes per GPU, default 8), RUN_ID,
+#      REFERENCE (eval JSON of the same checkpoint; the orig branch must reproduce it)
 # Output: outputs/pmil/diagnose/<RUN_ID>/diagnosis.md
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
@@ -45,5 +46,5 @@ if [[ "$status" -ne 0 ]]; then
     printf 'a dump failed; last lines of the logs:\n' >&2
     tail -n 5 "$OUT"/*.log >&2
 fi
-python3 scripts/diagnose_pmil.py analyze --out_dir "$OUT"
+python3 scripts/diagnose_pmil.py analyze --out_dir "$OUT" ${REFERENCE:+--reference "$REFERENCE"}
 exit "$status"

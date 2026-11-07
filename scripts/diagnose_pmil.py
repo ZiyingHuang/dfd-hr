@@ -12,6 +12,7 @@ Use scripts/run_pmil_diagnose.sh to dump all datasets on 4 GPUs and analyze.
 """
 
 import argparse
+import hashlib
 import json
 import sys
 from collections import defaultdict
@@ -64,15 +65,21 @@ def json_loader(config, dataset, batch_size, workers, shard, num_shards):
     cfg = dict(config)
     cfg['test_dataset'] = dataset
     ds = DeepfakeAbstractBaseDataset(config=cfg, mode='test')
-    lo, hi = shard_range(len(ds), shard, num_shards)
-    loader = torch.utils.data.DataLoader(torch.utils.data.Subset(ds, range(lo, hi)), batch_size=batch_size,
+    # The dataset shuffles its frame list with an unseeded random.shuffle, so every process sees a
+    # different order. Shard over a canonical (sorted) order instead, which is identical everywhere.
+    paths = [str(p) for p in ds.data_dict['image']]
+    labels = list(ds.data_dict['label'])
+    order = sorted(range(len(paths)), key=lambda i: (paths[i], int(labels[i])))
+    lo, hi = shard_range(len(order), shard, num_shards)
+    loader = torch.utils.data.DataLoader(torch.utils.data.Subset(ds, order[lo:hi]), batch_size=batch_size,
                                          shuffle=False, num_workers=workers,
                                          collate_fn=ds.collate_fn, drop_last=False)
     meta = []
-    for path, label in list(zip(ds.data_dict['image'], ds.data_dict['label']))[lo:hi]:
-        parts = str(path).replace('\\', '/').split('/')
-        meta.append((path, int(label != 0), f'{parts[-3]}_{parts[-2]}'))
-    return loader, meta
+    for i in order[lo:hi]:
+        parts = paths[i].replace('\\', '/').split('/')
+        meta.append((paths[i], int(labels[i] != 0), f'{parts[-3]}_{parts[-2]}'))
+    full = [(paths[i], int(labels[i] != 0)) for i in order]
+    return loader, meta, full, (lo, hi)
 
 
 class _FolderFrames:
@@ -116,12 +123,16 @@ def dump(args):
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model, config = build_model(args.detector, args.test_config, args.checkpoint, args.dataset, device, args.frame_num)
+    span = [0, 0, []]   # filled by batches(): shard start, end, full canonical frame list
+
     def batches():
         if args.dataset in FOLDER_DATASETS:
             samples = folder_samples(args.wdf_root, args.dataset, args.frame_num)
             if args.max_videos:
                 samples = _subsample(samples, args.max_videos)
+            full = [(p, int(y)) for p, y, _ in samples]
             lo, hi = shard_range(len(samples), args.shard, args.num_shards)
+            span[:] = [lo, hi, full]
             samples = samples[lo:hi]
             loader = torch.utils.data.DataLoader(_FolderFrames(samples, config), batch_size=args.batch_size,
                                                  shuffle=False, num_workers=args.workers)
@@ -131,8 +142,9 @@ def dump(args):
                 yield images.to(device, non_blocking=True), samples[pos:pos + n]
                 pos += n
         else:
-            loader, meta = json_loader(config, args.dataset, args.batch_size, args.workers,
-                                       args.shard, args.num_shards)
+            loader, meta, full, (lo, hi) = json_loader(config, args.dataset, args.batch_size, args.workers,
+                                                       args.shard, args.num_shards)
+            span[:] = [lo, hi, full]
             pos = 0
             for data_dict in loader:
                 n = data_dict['image'].shape[0]
@@ -162,9 +174,16 @@ def dump(args):
     name = args.dataset if args.num_shards == 1 else f'{args.dataset}.s{args.shard}of{args.num_shards}'
     out_path = Path(args.out_dir) / f'{name}.npz'
     out_path.parent.mkdir(parents=True, exist_ok=True)
+    lo, hi, full = span
+    if len(samples) != hi - lo:
+        raise RuntimeError(f'shard has {len(samples)} frames, expected {hi - lo}')
+    digest = hashlib.sha1('\n'.join(f'{p}\t{y}' for p, y in full).encode()).hexdigest()
     np.savez_compressed(out_path,
                         labels=np.array([y for _, y, _ in samples]),
                         videos=np.array([v for _, _, v in samples]),
+                        paths=np.array([str(p) for p, _, _ in samples]),
+                        shard_span=np.array([lo, hi, len(full)]),
+                        list_sha1=np.array(digest),
                         **{k: np.concatenate(v) for k, v in rows.items()})
     print(f'saved {out_path}')
 
@@ -188,6 +207,27 @@ def sigmoid(x):
     return 1.0 / (1.0 + np.exp(-np.clip(x, -50, 50)))
 
 
+def check_shards(name, parts):
+    """Shards must come from the same frame list and tile it exactly: [0,a), [a,b), ..., [y,total)."""
+    hashes = {str(q['list_sha1']) for q in parts}
+    if len(hashes) != 1:
+        raise SystemExit(f'{name}: shards were built from different frame lists ({len(hashes)} versions)')
+    spans = [tuple(int(x) for x in q['shard_span']) for q in parts]
+    total = spans[0][2]
+    pos = 0
+    for lo, hi, tot in spans:
+        if lo != pos or tot != total:
+            raise SystemExit(f'{name}: shards do not tile the frame list: {spans}')
+        pos = hi
+    if pos != total:
+        raise SystemExit(f'{name}: shards cover {pos} of {total} frames')
+    paths = np.concatenate([q['paths'] for q in parts])
+    if len(paths) != total or len(set(paths.tolist())) != len(paths):
+        raise SystemExit(f'{name}: duplicated or missing frames after merging')
+    print(f'[ok] {name}: {len(parts)} shards, {total} frames, {len(set(np.concatenate([q["videos"] for q in parts]).tolist()))} videos, '
+          f'list sha1 {next(iter(hashes))[:10]}')
+
+
 def analyze(args):
     root = Path(args.out_dir)
     data = {}
@@ -203,7 +243,9 @@ def analyze(args):
             print(f'[warn] {d}: {len(shards)}/{expected} shards present, skipped')
             continue
         parts = [dict(np.load(p)) for p in shards]
-        data[d] = {k: np.concatenate([q[k] for q in parts]) for k in parts[0]}
+        check_shards(d, parts)
+        keep = [k for k in parts[0] if k not in ('shard_span', 'list_sha1')]
+        data[d] = {k: np.concatenate([q[k] for q in parts]) for k in keep}
     if not data:
         raise SystemExit(f'no dumps in {root}')
     has_parts = 'bag' in next(iter(data.values()))
@@ -281,6 +323,21 @@ def analyze(args):
         for d, z in data.items():
             emit(f'| {SHORT[d]} | ' + ' | '.join(f'{v:.2f}' for v in z['attn_entropy'].mean(0)) + ' |')
 
+    if getattr(args, 'reference', None):
+        ref = json.loads(Path(args.reference).read_text(encoding='utf-8')).get('datasets', {})
+        emit('\n## Check: orig branch vs. official eval JSON (video AUC, must match)\n')
+        emit('| dataset | diagnose | eval JSON | diff |')
+        emit('|---|---|---|---|')
+        worst = 0.0
+        for d in TARGETS:
+            if d not in data or d not in ref:
+                continue
+            yv, sv = _video(data[d]['labels'], sigmoid(data[d]['orig']), data[d]['videos'])
+            mine, theirs = _auc(yv, sv), ref[d]['metrics']['video_auc']
+            worst = max(worst, abs(mine - theirs))
+            emit(f'| {SHORT[d]} | {mine * 100:.3f} | {theirs * 100:.3f} | {(mine - theirs) * 100:+.3f} |')
+        emit(f'\nmax |diff| = {worst * 100:.3f} points ' + ('(OK)' if worst < 5e-4 else '(MISMATCH: check before using these numbers)'))
+
     (root / 'diagnosis.md').write_text('\n'.join(lines) + '\n', encoding='utf-8')
     print(f'\nwritten {root / "diagnosis.md"}')
 
@@ -303,6 +360,8 @@ def main():
     d.add_argument('--out_dir', required=True)
     a = sub.add_parser('analyze')
     a.add_argument('--out_dir', required=True)
+    a.add_argument('--reference', default=None,
+                   help='eval JSON of the same checkpoint with fuse=orig; the orig row must reproduce it')
     args = ap.parse_args()
     dump(args) if args.cmd == 'dump' else analyze(args)
 
