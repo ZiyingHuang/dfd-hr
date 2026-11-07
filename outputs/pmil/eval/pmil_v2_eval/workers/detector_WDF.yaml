@@ -1,0 +1,3 @@
+_base_: /home/huangjunrong/deepfake/dfd-hr/training/config/detector/dfd_hr_pmil_v2.yaml
+part_mil:
+  template_path: /home/huangjunrong/deepfake/dfd-hr/training/config/part_template_32_WDF.npy

@@ -1,0 +1,6 @@
+Celeb-DF-v2	FF++ template
+DFDC	FF++ template
+DeepFakeDetection	FF++ template
+DFDCP	FF++ template
+FaceShifter	FF++ template
+WDF	/home/huangjunrong/deepfake/dfd-hr/training/config/part_template_32_WDF.npy
