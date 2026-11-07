@@ -67,10 +67,14 @@ def init_seed(config):
 
 def prepare_training_data(config):
 
-    train_set = DeepfakeAbstractBaseDataset(
-                config=config,
-                mode='train',
-            )
+    if config.get('sbi', {}).get('enable', False):
+        from dataset.sbi_dataset import SBIAugmentedDataset
+        train_set = SBIAugmentedDataset(config=config, mode='train')
+    else:
+        train_set = DeepfakeAbstractBaseDataset(
+                    config=config,
+                    mode='train',
+                )
 
     if config['ddp']:
         sampler = DistributedSampler(train_set)

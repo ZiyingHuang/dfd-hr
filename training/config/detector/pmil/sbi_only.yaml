@@ -1,0 +1,10 @@
+# SBI screening run 1 (decisive): fine-tune from the official DFD-HR checkpoint with SBI pseudo-fakes
+# added to FF++, NO part loss, predict with the original head.
+# If this does not beat the DFD-HR baseline, the SBI direction is not worth a from-scratch run.
+_base_: v2_control_finetune.yaml   # official init, layers 16-23 fine-tuned at 1e-5, part loss weight 0
+nEpochs: 2                          # epochs 0..2; the v2 run peaked at epoch 0
+
+sbi:
+  enable: true
+  ratio: 1.0          # SBI pseudo-fakes per real frame per epoch (real : FF++ fake : SBI = 1 : 4 : 1)
+  region_probs: {face: 0.4, inner: 0.2, lower: 0.15, mouth: 0.125, eyes: 0.125}

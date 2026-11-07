@@ -55,3 +55,18 @@ def test_mask_part_labels():
     loss = part_mask_loss(logits, logits.mean(1), label, targets, valid)
     loss.backward()
     assert torch.isfinite(loss)
+
+
+def test_mask_part_labels_soft_blend_and_tiny_region():
+    from training.detectors.utils.part_mil import mask_part_labels
+
+    G = 4
+    parts = torch.zeros(2, G * G)
+    parts[0, :4] = 1
+    parts[1, 12:] = 1
+    mask = torch.zeros(2, 8, 8, 1)
+    mask[0, :2] = 0.25            # weak (25%) blend over the top part only
+    mask[1, 0, 0] = 1.0           # tiny region -> below threshold, still one fake part
+    targets, valid, _ = mask_part_labels(mask, parts, torch.tensor([1, 1]), thr=0.2)
+    assert targets.tolist() == [[1, 0], [1, 0]]
+    assert valid.tolist() == [True, True]

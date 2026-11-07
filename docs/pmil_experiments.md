@@ -138,3 +138,16 @@ python3 scripts/summarize_video_auc.py \
 CHECKPOINT=outputs/pmil/train/pmil_v2/test/avg/ckpt_best.pth \
 DETECTOR=training/config/detector/dfd_hr_pmil_v2.yaml bash scripts/run_pmil_diagnose.sh
 ```
+
+## SBI 快速筛选（2026-11-07）
+
+v2 诊断：部位分支各部位在 FF++ 上 95–99，跨库 70–80；瓶颈是 FF++ 只有 4 种伪造方法。
+SBI（Shiohara & Yamasaki, CVPR 2022，本仓库 `training/dataset/sbi_dataset.py` 独立重写）用真脸自混合生成伪造，
+混合 mask 随机落在整脸 / 内脸 / 下半脸 / 嘴 / 眼，部位标签因此真正按部位区分。
+
+```bash
+python3 scripts/preview_sbi.py                     # 先看 SBI 样本是否正常（CPU，约 10 秒）
+DETECTOR=training/config/detector/pmil/sbi_only.yaml  RUN_ID=sbi_only  bash scripts/run_pmil_train.sh   # 决定性实验
+DETECTOR=training/config/detector/pmil/sbi_parts.yaml RUN_ID=sbi_parts bash scripts/run_pmil_train.sh   # sbi_only 有提升再跑
+```
+两者都从官方权重微调第 16–23 层、用原分类头预测；唯一区别是部位损失。最终论文数字计划从 CLIP 重新训练。

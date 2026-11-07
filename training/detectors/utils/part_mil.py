@@ -78,13 +78,21 @@ def mask_part_labels(mask, part_masks, label, thr=0.2):
     mask = mask.float()
     if mask.shape[1] > 1:
         mask = mask.mean(1, keepdim=True)
+    # Soft blends (e.g. SBI with blend ratio 0.25) mark *where* the forgery is, not how much:
+    # normalise every mask by its own peak before measuring part overlap.
+    peak = mask.flatten(1).amax(1).clamp_min(1e-6).view(-1, 1, 1, 1)
+    mask = mask / peak
     grid = int(round(part_masks.shape[1] ** 0.5))
     tok = F.adaptive_avg_pool2d(mask, grid).flatten(1)                     # B x N fraction manipulated
     pm = part_masks.float()
     ratio = tok @ pm.t() / pm.sum(1).clamp_min(1e-6)                        # B x K
     fake = label != 0
-    targets = ((ratio > thr) & fake.unsqueeze(1)).float()
     valid = (~fake) | (tok.sum(1) > 0)
+    targets = ((ratio > thr) & fake.unsqueeze(1)).float()
+    # a valid fake always has at least one fake part: the most-overlapped one
+    top = F.one_hot(ratio.argmax(1), ratio.shape[1]).float()
+    need = (fake & valid & (targets.sum(1) == 0)).float().unsqueeze(1)
+    targets = torch.maximum(targets, top * need)
     return targets, valid, ratio
 
 

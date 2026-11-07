@@ -1,0 +1,9 @@
+# SBI screening run 2: identical to sbi_only.yaml plus part-wise supervision.
+# SBI blending masks give region-specific part labels (FF++ masks cover the whole face).
+_base_: ../dfd_hr_pmil_v2.yaml
+nEpochs: 2
+
+sbi:
+  enable: true
+  ratio: 1.0
+  region_probs: {face: 0.4, inner: 0.2, lower: 0.15, mouth: 0.125, eyes: 0.125}
