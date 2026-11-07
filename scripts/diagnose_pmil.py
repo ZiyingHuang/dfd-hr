@@ -52,7 +52,11 @@ def build_model(detector, test_config, checkpoint, dataset, device, frame_num=32
     return model, config
 
 
-def json_loader(config, dataset, batch_size):
+def shard_range(n, shard, num_shards):
+    return n * shard // num_shards, n * (shard + 1) // num_shards
+
+
+def json_loader(config, dataset, batch_size, workers, shard, num_shards):
     """Exactly the data pipeline of scripts/test.py (same resize / normalisation)."""
     import torch
     from dataset.abstract_dataset import DeepfakeAbstractBaseDataset
@@ -60,14 +64,30 @@ def json_loader(config, dataset, batch_size):
     cfg = dict(config)
     cfg['test_dataset'] = dataset
     ds = DeepfakeAbstractBaseDataset(config=cfg, mode='test')
-    loader = torch.utils.data.DataLoader(ds, batch_size=batch_size, shuffle=False,
-                                         num_workers=int(cfg.get('workers', 4)),
+    lo, hi = shard_range(len(ds), shard, num_shards)
+    loader = torch.utils.data.DataLoader(torch.utils.data.Subset(ds, range(lo, hi)), batch_size=batch_size,
+                                         shuffle=False, num_workers=workers,
                                          collate_fn=ds.collate_fn, drop_last=False)
     meta = []
-    for path, label in zip(ds.data_dict['image'], ds.data_dict['label']):
+    for path, label in list(zip(ds.data_dict['image'], ds.data_dict['label']))[lo:hi]:
         parts = str(path).replace('\\', '/').split('/')
         meta.append((path, int(label != 0), f'{parts[-3]}_{parts[-2]}'))
     return loader, meta
+
+
+class _FolderFrames:
+    """Folder frames loaded in DataLoader workers with the same load_image as the eval script."""
+
+    def __init__(self, samples, config):
+        self.samples, self.config = samples, config
+
+    def __len__(self):
+        return len(self.samples)
+
+    def __getitem__(self, i):
+        import torch
+        from evaluate_deepfake_testset import load_image
+        return load_image(self.samples[i][0], self.config, torch.device('cpu'))
 
 
 def folder_samples(root, dataset, frame_num):
@@ -93,7 +113,6 @@ def dump(args):
     import torch
     sys.path.insert(0, str(PROJECT_ROOT / 'training'))
     sys.path.insert(0, str(PROJECT_ROOT / 'scripts'))
-    from evaluate_deepfake_testset import load_image
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model, config = build_model(args.detector, args.test_config, args.checkpoint, args.dataset, device, args.frame_num)
@@ -102,11 +121,18 @@ def dump(args):
             samples = folder_samples(args.wdf_root, args.dataset, args.frame_num)
             if args.max_videos:
                 samples = _subsample(samples, args.max_videos)
-            for start in range(0, len(samples), args.batch_size):
-                batch = samples[start:start + args.batch_size]
-                yield torch.stack([load_image(p, config, device) for p, _, _ in batch]), batch
+            lo, hi = shard_range(len(samples), args.shard, args.num_shards)
+            samples = samples[lo:hi]
+            loader = torch.utils.data.DataLoader(_FolderFrames(samples, config), batch_size=args.batch_size,
+                                                 shuffle=False, num_workers=args.workers)
+            pos = 0
+            for images in loader:
+                n = images.shape[0]
+                yield images.to(device, non_blocking=True), samples[pos:pos + n]
+                pos += n
         else:
-            loader, meta = json_loader(config, args.dataset, args.batch_size)
+            loader, meta = json_loader(config, args.dataset, args.batch_size, args.workers,
+                                       args.shard, args.num_shards)
             pos = 0
             for data_dict in loader:
                 n = data_dict['image'].shape[0]
@@ -133,7 +159,8 @@ def dump(args):
             print(f'[{args.dataset}] {len(metas)} frames', flush=True)
     samples = metas
 
-    out_path = Path(args.out_dir) / f'{args.dataset}.npz'
+    name = args.dataset if args.num_shards == 1 else f'{args.dataset}.s{args.shard}of{args.num_shards}'
+    out_path = Path(args.out_dir) / f'{name}.npz'
     out_path.parent.mkdir(parents=True, exist_ok=True)
     np.savez_compressed(out_path,
                         labels=np.array([y for _, y, _ in samples]),
@@ -163,7 +190,20 @@ def sigmoid(x):
 
 def analyze(args):
     root = Path(args.out_dir)
-    data = {d: dict(np.load(root / f'{d}.npz')) for d in DATASETS if (root / f'{d}.npz').exists()}
+    data = {}
+    for d in DATASETS:
+        if (root / f'{d}.npz').exists():
+            data[d] = dict(np.load(root / f'{d}.npz'))
+            continue
+        shards = sorted(root.glob(f'{d}.s*of*.npz'), key=lambda p: int(p.name.split('.s')[-1].split('of')[0]))
+        if not shards:
+            continue
+        expected = int(shards[0].name.split('of')[-1].split('.')[0])
+        if len(shards) != expected:
+            print(f'[warn] {d}: {len(shards)}/{expected} shards present, skipped')
+            continue
+        parts = [dict(np.load(p)) for p in shards]
+        data[d] = {k: np.concatenate([q[k] for q in parts]) for k in parts[0]}
     if not data:
         raise SystemExit(f'no dumps in {root}')
     has_parts = 'bag' in next(iter(data.values()))
@@ -256,7 +296,10 @@ def main():
     d.add_argument('--wdf_root', default='/data/hjr/deepfake/testset')
     d.add_argument('--frame_num', type=int, default=32)
     d.add_argument('--max_videos', type=int, default=0, help='folder datasets only; 0 = all videos')
-    d.add_argument('--batch_size', type=int, default=32)
+    d.add_argument('--batch_size', type=int, default=64)
+    d.add_argument('--workers', type=int, default=8)
+    d.add_argument('--shard', type=int, default=0)
+    d.add_argument('--num_shards', type=int, default=1)
     d.add_argument('--out_dir', required=True)
     a = sub.add_parser('analyze')
     a.add_argument('--out_dir', required=True)
