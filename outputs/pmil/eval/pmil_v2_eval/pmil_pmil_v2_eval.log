@@ -1,0 +1,7 @@
+namespace=pmil
+run_id=pmil_v2_eval
+status=complete
+completed_datasets=Celeb-DF-v2,FaceShifter,DeepFakeDetection,DFDC,DFDCP,WDF
+averages={"all_completed": {"acc": 0.8002735493876342, "ap": 0.9132768094530688, "auc": 0.8793638615509606, "eer": 0.2002603153934456, "video_acc": 0.8464058185263351, "video_auc": 0.9254689031457174, "video_eer": 0.1483338586116895}, "by_source_type": {"folder": {"acc": 0.7718025058925692, "ap": 0.8737448655045117, "auc": 0.8606424523213112, "eer": 0.22272727272727272, "video_acc": 0.8076923076923077, "video_auc": 0.8985895540773589, "video_eer": 0.1717171717171717}, "json": {"acc": 0.8059677580866472, "ap": 0.9211831982427802, "auc": 0.8831081433968905, "eer": 0.19576692392668021, "video_acc": 0.8541485206931407, "video_auc": 0.9308447729593892, "video_eer": 0.14365719599059307}}}
+totals={"fake_videos": 410, "num_frames": 16122, "num_videos": 806, "real_videos": 396}
+json=/home/huangjunrong/deepfake/dfd-hr/outputs/pmil/eval/pmil_v2_eval/pmil_pmil_v2_eval.json
