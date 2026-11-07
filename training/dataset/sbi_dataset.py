@@ -73,18 +73,19 @@ def _deform_mask(mask, rng):
 
 
 def _source_transform(img, rng):
-    """Colour + quality perturbation of the source copy (uint8 RGB in, uint8 RGB out)."""
+    """Subtle colour + quality perturbation of the source copy (uint8 RGB in / out).
+    Kept mild on purpose: strong colour seams are an easy shortcut that real deepfakes lack."""
     x = img.astype(np.float32)
     if rng.random() < 0.3:                                              # RGB shift
-        x += rng.uniform(-20, 20, 3)
+        x += rng.uniform(-10, 10, 3)
     if rng.random() < 0.3:                                              # hue / saturation / value
         hsv = cv2.cvtColor(np.clip(x, 0, 255).astype(np.uint8), cv2.COLOR_RGB2HSV).astype(np.float32)
-        hsv[..., 0] = (hsv[..., 0] + rng.uniform(-0.3, 0.3) * 10) % 180
-        hsv[..., 1] = np.clip(hsv[..., 1] + rng.uniform(-30, 30), 0, 255)
-        hsv[..., 2] = np.clip(hsv[..., 2] + rng.uniform(-20, 20), 0, 255)
+        hsv[..., 0] = (hsv[..., 0] + rng.uniform(-2, 2)) % 180
+        hsv[..., 1] = np.clip(hsv[..., 1] + rng.uniform(-15, 15), 0, 255)
+        hsv[..., 2] = np.clip(hsv[..., 2] + rng.uniform(-15, 15), 0, 255)
         x = cv2.cvtColor(hsv.astype(np.uint8), cv2.COLOR_HSV2RGB).astype(np.float32)
     if rng.random() < 0.3:                                              # brightness / contrast
-        x = (x - 128) * rng.uniform(0.9, 1.1) + 128 + rng.uniform(-0.1, 0.1) * 255
+        x = (x - 128) * rng.uniform(0.92, 1.08) + 128 + rng.uniform(-0.06, 0.06) * 255
     x = np.clip(x, 0, 255).astype(np.uint8)
     r = rng.random()
     if r < 0.3:                                                         # down-scale (quality gap)
