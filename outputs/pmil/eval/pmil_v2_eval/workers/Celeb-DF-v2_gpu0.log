@@ -1,0 +1,8 @@
+/root/my_env/lib/python3.10/site-packages/albumentations/augmentations/transforms.py:688: FutureWarning: This class has been deprecated. Please use CoarseDropout
+  warnings.warn(
+/root/my_env/lib/python3.10/site-packages/transformers/tokenization_utils_base.py:1601: FutureWarning: `clean_up_tokenization_spaces` was not set. It will be set to `True` by default. This behavior will be depracted in transformers v4.45, and will be then set to `False` by default. For more details check this issue: https://github.com/huggingface/transformers/issues/31884
+  warnings.warn(
+[PMIL] parts=['eyes_brows', 'nose', 'mouth', 'boundary', 'skin'] grid=32 freeze_base=False supervision=mask base_lr_scale=0.1 trainable_params=38972743
+===> Load checkpoint done!
+===> Saved test metrics to /home/huangjunrong/deepfake/dfd-hr/outputs/pmil/eval/pmil_v2_eval/workers/test_metrics_pmil_v2_eval_Celeb-DF-v2.json
+===> Test Done!
